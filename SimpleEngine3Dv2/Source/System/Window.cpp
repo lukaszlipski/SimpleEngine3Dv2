@@ -6,7 +6,7 @@ namespace SE3D2
 
 	LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-	bool Window::Startup(uint32_t width, uint32_t height, const std::string& title)
+	bool Window::Startup(uint32 width, uint32 height, const std::string& title)
 	{
 		mWidth = width;
 		mHeight = height;

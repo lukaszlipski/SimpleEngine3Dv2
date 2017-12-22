@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include <stdint.h>
 #include <string>
+#include "..\Utility\Types.h"
 
 namespace SE3D2
 {
@@ -16,18 +17,19 @@ namespace SE3D2
 			return *instance;
 		}
 
-		bool Startup(uint32_t width, uint32_t height, const std::string& title);
+		bool Startup(uint32 width, uint32 height, const std::string& title);
 		bool Shutdown();
 		void Close();
 		void Update();
 
-		inline uint32_t GetWidth() const { return mWidth; }
-		inline uint32_t GetHeight() const { return mHeight; }
+		inline uint32 GetWidth() const { return mWidth; }
+		inline uint32 GetHeight() const { return mHeight; }
 		inline bool ShouldWindowClose() const { return mRunning; }
+		inline HWND GetWindowHandle() const { return mWindowHandle; }
 
 	private:
-		uint32_t mWidth;
-		uint32_t mHeight;
+		uint32 mWidth;
+		uint32 mHeight;
 		HWND mWindowHandle;
 		std::string mTitle;
 		static bool mRunning;
