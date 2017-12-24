@@ -17,7 +17,7 @@ namespace SE3D2
 
 		DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
 		swapChainDesc.BufferDesc = swapChainModeDesc;
-		swapChainDesc.OutputWindow = Window::GetInstance().GetWindowHandle();
+		swapChainDesc.OutputWindow = Window::Get().GetWindowHandle();
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		swapChainDesc.BufferCount = 1;

@@ -156,12 +156,15 @@
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\Platform\Directx11\Dx11Context.cpp" />
     <ClCompile Include="Source\Platform\OpenGL\OGContext.cpp" />
+    <ClCompile Include="Source\System\File.cpp" />
     <ClCompile Include="Source\System\Graphics.cpp" />
     <ClCompile Include="Source\System\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Graphic\API\Context.h" />
     <ClInclude Include="Source\Platform\OpenGL\OGContext.h" />
+    <ClInclude Include="Source\System\File.h" />
+    <ClInclude Include="Source\Utility\DateTime.h" />
     <ClInclude Include="Source\Utility\Types.h" />
     <ClInclude Include="Source\Platform\Directx11\Dx11Context.h" />
     <ClInclude Include="Source\System\Graphics.h" />

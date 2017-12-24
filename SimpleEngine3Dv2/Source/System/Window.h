@@ -1,6 +1,5 @@
 #pragma once
 #include <Windows.h>
-#include <stdint.h>
 #include <string>
 #include "..\Utility\Types.h"
 
@@ -11,7 +10,7 @@ namespace SE3D2
 	{
 
 	public:
-		static Window& GetInstance()
+		static Window& Get()
 		{
 			static Window *instance = new Window();
 			return *instance;

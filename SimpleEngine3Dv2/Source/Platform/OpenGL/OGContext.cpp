@@ -18,7 +18,7 @@ namespace SE3D2
 		DesiredPixelFormat.cAlphaBits = 8;
 		DesiredPixelFormat.iLayerType = PFD_MAIN_PLANE;
 
-		HDC WindowDC = GetDC(Window::GetInstance().GetWindowHandle());
+		HDC WindowDC = GetDC(Window::Get().GetWindowHandle());
 
 		int SuggestedPixelFormatIndex = ChoosePixelFormat(WindowDC, &DesiredPixelFormat);
 		PIXELFORMATDESCRIPTOR SuggestedPixelFormat = {};
@@ -42,10 +42,10 @@ namespace SE3D2
 
 	void OGContext::ClearResources()
 	{
-		HDC WindowDC = GetDC(Window::GetInstance().GetWindowHandle());
+		HDC WindowDC = GetDC(Window::Get().GetWindowHandle());
 		wglMakeCurrent(WindowDC, 0);
 		wglDeleteContext(static_cast<HGLRC>(mOpenGLContext));
-		ReleaseDC(Window::GetInstance().GetWindowHandle(), WindowDC);
+		ReleaseDC(Window::Get().GetWindowHandle(), WindowDC);
 	}
 
 	void OGContext::Clear()
@@ -55,9 +55,9 @@ namespace SE3D2
 
 	void OGContext::SwapBuffers()
 	{
-		HDC WindowDC = GetDC(Window::GetInstance().GetWindowHandle());
+		HDC WindowDC = GetDC(Window::Get().GetWindowHandle());
 		::SwapBuffers(WindowDC);
-		ReleaseDC(Window::GetInstance().GetWindowHandle(), WindowDC);
+		ReleaseDC(Window::Get().GetWindowHandle(), WindowDC);
 	}
 
 }

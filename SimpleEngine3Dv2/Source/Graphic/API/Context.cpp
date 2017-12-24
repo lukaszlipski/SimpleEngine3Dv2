@@ -1,6 +1,6 @@
 #include "Context.h"
-#include "..\..\Platform\Directx11\Dx11Context.h"
-#include "..\Platform\OpenGL\OGContext.h"
+#include "../../Platform/Directx11/Dx11Context.h"
+#include "../Platform/OpenGL/OGContext.h"
 
 namespace SE3D2
 {
@@ -11,12 +11,12 @@ namespace SE3D2
 		{
 		case GraphicsAPI::DIRECTX11:
 		{
-			return new Dx11Contex();
+			return (new Dx11Contex())->SetAPI(api);
 			break;
 		}
 		case GraphicsAPI::OPENGL:
 		{
-			return new OGContext();
+			return (new OGContext())->SetAPI(api);
 			break;
 		}
 		}

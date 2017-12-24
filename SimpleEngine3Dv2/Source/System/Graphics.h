@@ -7,7 +7,7 @@ namespace SE3D2
 	class Graphics
 	{
 	public:
-		static Graphics& GetInstance()
+		static Graphics& Get()
 		{
 			static Graphics* instance = new Graphics();
 			return *instance;
@@ -17,6 +17,7 @@ namespace SE3D2
 		bool Shutdown();
 		void Clear();
 		void Update();
+		inline Context* GetContext() const { return mContext; }
 
 	private:
 		Context* mContext;

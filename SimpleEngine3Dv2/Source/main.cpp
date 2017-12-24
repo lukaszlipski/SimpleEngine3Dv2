@@ -1,25 +1,28 @@
 #include "System/Window.h"
 #include "Graphic/API/Context.h"
 #include "System/Graphics.h"
+#include "System/File.h"
 
 using namespace SE3D2;
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 
-	Window::GetInstance().Startup(800, 600, "SimpleEngine3Dv2");
-	Graphics::GetInstance().Startup(GraphicsAPI::DIRECTX11, 800, 600);
+	File::Get().Startup();
+	Window::Get().Startup(800, 600, "SimpleEngine3Dv2");
+	Graphics::Get().Startup(GraphicsAPI::DIRECTX11, 800, 600);
 
-	while (Window::GetInstance().ShouldWindowClose())
+	while (Window::Get().ShouldWindowClose())
 	{
-		Window::GetInstance().Update();
-		Graphics::GetInstance().Clear();
+		Window::Get().Update();
+		Graphics::Get().Clear();
 
-		Graphics::GetInstance().Update();
+		Graphics::Get().Update();
 	}
 
-	Graphics::GetInstance().Shutdown();
-	Window::GetInstance().Shutdown();
+	Graphics::Get().Shutdown();
+	Window::Get().Shutdown();
+	File::Get().Shutdown();
 
 	return 0;
 }
