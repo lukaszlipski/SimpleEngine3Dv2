@@ -7,18 +7,30 @@ namespace SE3D2
 	FileHandle* File::OpenRead(const std::string& path)
 	{
 		HANDLE Handle = CreateFile(path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+		if (Handle == INVALID_HANDLE_VALUE)
+		{
+			return nullptr;
+		}
 		return new SE3D2::FileHandle(Handle);
 	}
 
 	FileHandle* File::OpenWrite(const std::string& path)
 	{
 		HANDLE Handle = CreateFile(path.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE, NULL, OPEN_ALWAYS, 0, NULL);
+		if (Handle == INVALID_HANDLE_VALUE)
+		{
+			return nullptr;
+		}
 		return new SE3D2::FileHandle(Handle);
 	}
 
 	FileHandle* File::OpenReadWrite(const std::string& path)
 	{
-		HANDLE Handle = CreateFile(path.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE | FILE_SHARE_READ, NULL, CREATE_NEW, 0, NULL);
+		HANDLE Handle = CreateFile(path.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE | FILE_SHARE_READ, NULL, OPEN_ALWAYS, 0, NULL);
+		if (Handle == INVALID_HANDLE_VALUE)
+		{
+			return nullptr;
+		}
 		return new SE3D2::FileHandle(Handle);
 	}
 
@@ -48,6 +60,11 @@ namespace SE3D2
 		FILETIME time;
 		SYSTEMTIME sysTime;
 		HANDLE Handle = CreateFile(file.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+		if (Handle == INVALID_HANDLE_VALUE)
+		{
+			CloseHandle(Handle);
+			return DateTime{ 0,0,0,0,0,0 };
+		}
 		GetFileTime(Handle, 0, 0, &time);
 		FileTimeToSystemTime(&time, &sysTime);
 
@@ -110,10 +127,25 @@ namespace SE3D2
 
 	std::string File::CurrentDirectory()
 	{
-		std::string buffer;
-		buffer.resize(512);
-		GetCurrentDirectory(512, &buffer[0]);
-		return buffer;
+		char Tmp[512];
+		GetCurrentDirectory(512, &Tmp[0]);
+
+		std::string Buffer(Tmp);
+
+		for (auto& i : Buffer)
+		{
+			if (i == '\\')
+			{
+				i = '/';
+			}
+			else if (i == '\0')
+			{
+				break;
+			}
+		}
+
+
+		return Buffer;
 	}
 
 
@@ -189,7 +221,7 @@ namespace SE3D2
 		return Read;
 	}
 
-	bool File::Write(void* handle, void* buffer, int32 size, bool append /*= false*/)
+	bool File::Write(void* handle, const void* buffer, int32 size, bool append /*= false*/)
 	{
 		if (append)
 		{
@@ -233,12 +265,12 @@ namespace SE3D2
 		return true;
 	}
 
-	bool FileHandle::Write(uint8* buffer, int32 size, bool append /*= false*/)
+	bool FileHandle::Write(const uint8* buffer, int32 size, bool append /*= false*/)
 	{
 		return File::Get().Write(mHandle, buffer, size, append);
 	}
 
-	bool FileHandle::Write(std::string& buffer, bool append /*= false*/)
+	bool FileHandle::Write(const std::string& buffer, bool append /*= false*/)
 	{
 		return File::Get().Write(mHandle, &buffer[0], static_cast<int32>(buffer.length()), append);
 	}

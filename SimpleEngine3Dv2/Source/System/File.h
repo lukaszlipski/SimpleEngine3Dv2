@@ -1,6 +1,7 @@
 #pragma once
-#include "..\Utility\Types.h"
-#include "..\Utility\DateTime.h"
+#include "../Utility/Types.h"
+#include "../Utility/DateTime.h"
+#include "../Utility/Path.h"
 #include <string>
 #include <vector>
 
@@ -13,8 +14,8 @@ namespace SE3D2
 	public:
 		bool Read(uint8* buffer, int32 size);
 		bool Read(std::string& buffer, int32 size = 0);
-		bool Write(uint8* buffer, int32 size, bool append = false);
-		bool Write(std::string& buffer, bool append = false);
+		bool Write(const uint8* buffer, int32 size, bool append = false);
+		bool Write(const std::string& buffer, bool append = false);
 
 	private:
 		void* mHandle;
@@ -60,7 +61,7 @@ namespace SE3D2
 
 		friend FileHandle;
 		int32 Read(void* handle, void* buffer, int32 size, int32 read);
-		bool Write(void* handle, void* buffer, int32 size, bool append = false);
+		bool Write(void* handle, const void* buffer, int32 size, bool append = false);
 
 	};
 

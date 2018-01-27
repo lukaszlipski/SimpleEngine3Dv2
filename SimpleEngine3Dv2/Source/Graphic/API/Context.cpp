@@ -11,7 +11,7 @@ namespace SE3D2
 		{
 		case GraphicsAPI::DIRECTX11:
 		{
-			return (new Dx11Contex())->SetAPI(api);
+			return (new Dx11Context())->SetAPI(api);
 			break;
 		}
 		case GraphicsAPI::OPENGL:

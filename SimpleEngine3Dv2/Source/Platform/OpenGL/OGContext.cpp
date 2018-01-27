@@ -60,4 +60,19 @@ namespace SE3D2
 		ReleaseDC(Window::Get().GetWindowHandle(), WindowDC);
 	}
 
+	Shader* OGContext::CreateShader(const std::string& name, ShaderType type)
+	{
+		return nullptr;
+	}
+
+	SE3D2::ParametersBuffer* OGContext::CreateParametersBuffer(const std::string& name, int32 size, int32 slot)
+	{
+		return nullptr;
+	}
+
+	void OGContext::SetVertexFormat(VertexFormat* format)
+	{
+		
+	}
+
 }

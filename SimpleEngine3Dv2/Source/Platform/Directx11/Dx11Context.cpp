@@ -1,11 +1,14 @@
 #include <d3d11.h>
+#include "../../System/Window.h"
+#include "../System/File.h"
 #include "Dx11Context.h"
-#include "..\..\System\Window.h"
+#include "Dx11Shader.h"
+#include "Dx11VertexFormat.h"
 
 namespace SE3D2
 {
 
-	bool Dx11Contex::Init(uint32 width, uint32 height)
+	bool Dx11Context::Init(uint32 width, uint32 height)
 	{
 		// Create SwapChain, Dx11Device, Dx11DeviceContext
 		DXGI_MODE_DESC swapChainModeDesc = {};
@@ -87,7 +90,7 @@ namespace SE3D2
 		return true;
 	}
 
-	void Dx11Contex::ClearResources()
+	void Dx11Context::ClearResources()
 	{
 		mDepthStencilV->Release();
 		mBackBufferRT->Release();
@@ -96,16 +99,64 @@ namespace SE3D2
 		mD3D11Device->Release();
 	}
 
-	void Dx11Contex::Clear()
+	void Dx11Context::Clear()
 	{
 		const float ClearColor[] = { 0.0f,0.0f,1.0f,1.0f };
 		mD3D11DeviceCtx->ClearRenderTargetView(mBackBufferRT, ClearColor);
 		mD3D11DeviceCtx->ClearDepthStencilView(mDepthStencilV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	}
 
-	void Dx11Contex::SwapBuffers()
+	void Dx11Context::SwapBuffers()
 	{
 		mSwapChain->Present(0, 0);
+	}
+
+	Shader* Dx11Context::CreateShader(const std::string& name, ShaderType type)
+	{
+		Shader* NewShader = nullptr;
+		switch (type)
+		{
+		case ShaderType::VERTEX:
+		{
+			NewShader = new Dx11Shader<Dx11VertexShaderPolicy>(name);
+			break;
+		}
+		case ShaderType::FRAGMET:
+		{
+			NewShader = new Dx11Shader<Dx11PixelShaderPolicy>(name);
+			break;
+		}
+		}
+
+		if (NewShader->Compile(name))
+		{
+			return NewShader;
+		}
+		delete NewShader;
+
+		return nullptr;
+	}
+
+	SE3D2::ParametersBuffer* Dx11Context::CreateParametersBuffer(const std::string& name, int32 size, int32 slot)
+	{
+		D3D11_BUFFER_DESC ConstBufferDesc = {};
+		ConstBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		ConstBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+		ConstBufferDesc.ByteWidth = size;
+
+		ID3D11Buffer* ConstBuffer;
+		if (mD3D11Device->CreateBuffer(&ConstBufferDesc, 0, &ConstBuffer) != S_OK)
+		{
+			return nullptr;
+		}
+
+		return new Dx11ParametersBuffer(name, size, slot, ConstBuffer);
+
+	}
+
+	void Dx11Context::SetVertexFormat(VertexFormat* format)
+	{
+		mD3D11DeviceCtx->IASetInputLayout(static_cast<Dx11VertexFormat*>(format)->GetInputLayout());
 	}
 
 }
