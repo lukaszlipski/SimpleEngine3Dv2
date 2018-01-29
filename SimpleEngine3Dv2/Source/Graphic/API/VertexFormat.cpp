@@ -2,5 +2,8 @@
 
 namespace SE3D2
 {
-	std::map<VertexAttributeType, uint64> VertexFormat::mVertexAttributeMap;
+	BEGIN_VERTEX_FORMAT(CommonVertex)
+		VERTEX_MEMBER(CommonVertex, Position)
+		VERTEX_MEMBER(CommonVertex, TexCoord)
+	END_VERTEX_FORMAT(CommonVertex)
 }

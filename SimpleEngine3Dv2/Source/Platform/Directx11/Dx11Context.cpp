@@ -3,7 +3,6 @@
 #include "../System/File.h"
 #include "Dx11Context.h"
 #include "Dx11Shader.h"
-#include "Dx11VertexFormat.h"
 
 namespace SE3D2
 {
@@ -152,11 +151,6 @@ namespace SE3D2
 
 		return new Dx11ParametersBuffer(name, size, slot, ConstBuffer);
 
-	}
-
-	void Dx11Context::SetVertexFormat(VertexFormat* format)
-	{
-		mD3D11DeviceCtx->IASetInputLayout(static_cast<Dx11VertexFormat*>(format)->GetInputLayout());
 	}
 
 }

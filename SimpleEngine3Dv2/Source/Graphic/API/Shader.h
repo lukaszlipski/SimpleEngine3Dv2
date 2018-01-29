@@ -35,10 +35,12 @@ namespace SE3D2
 		inline ShaderType GetType() const { return mType; }
 		inline std::string GetName() const { return mName; }
 		ParametersBuffer* FindParametersBuffer(const std::string& name) const;
+		std::string GetSource() const { return mSource; }
 
 	protected:
 		std::string mName;
 		ShaderType mType;
+		std::string mSource;
 		std::vector<std::unique_ptr<ParametersBuffer>> mParametersBuffers;
 
 		virtual bool CollectResources(const std::string& source) = 0;

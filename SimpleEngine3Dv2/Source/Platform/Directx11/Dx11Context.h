@@ -13,7 +13,6 @@ namespace SE3D2
 		virtual void SwapBuffers() override;
 		virtual Shader* CreateShader(const std::string& name, ShaderType type) override;
 		virtual ParametersBuffer* CreateParametersBuffer(const std::string& name, int32 size, int32 slot) override;
-		virtual void SetVertexFormat(VertexFormat* format) override;
 		virtual std::string GetName() override { return "DirectX11"; }
 
 		inline struct ID3D11Device* GetDevice() const { return mD3D11Device; }

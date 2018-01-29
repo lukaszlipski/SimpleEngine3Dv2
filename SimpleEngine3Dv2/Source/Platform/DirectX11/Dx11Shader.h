@@ -49,7 +49,6 @@ namespace SE3D2
 		virtual std::string GetExtension() const override { return "hlsl"; }
 		virtual void SetParametersBuffer(ParametersBuffer* pb) override;
 
-
 	protected:
 		virtual bool CollectResources(const std::string& source) override;
 
@@ -70,24 +69,23 @@ namespace SE3D2
 		}
 
 		bool Compiled = true;
-		std::string Source;
-		if (!TryToFindCompiledFile(name, Source))
+		if (!TryToFindCompiledFile(name, mSource))
 		{
 			Compiled = false;
-			Source.clear();
-			if (!TryToFindSourceFile(name, Source))
+			mSource.clear();
+			if (!TryToFindSourceFile(name, mSource))
 			{
 				// Neither compiled nor source files were found
 				return false;
 			}
 		}
 
-		if (!mShaderPolicy.Compile(name, Source, Compiled))
+		if (!mShaderPolicy.Compile(name, mSource, Compiled))
 		{
 			return false;
 		}
 
-		return CollectResources(Source);
+		return CollectResources(mSource);
 	}
 
 	template<typename T>

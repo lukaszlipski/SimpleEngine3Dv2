@@ -29,7 +29,6 @@ namespace SE3D2
 		virtual void SwapBuffers() = 0;
 		virtual Shader* CreateShader(const std::string& name, ShaderType type) = 0;
 		virtual ParametersBuffer* CreateParametersBuffer(const std::string& name, int32 size, int32 slot) = 0;
-		virtual void SetVertexFormat(VertexFormat* format) = 0;
 
 	protected:
 		inline Context* SetAPI(GraphicsAPI api) 

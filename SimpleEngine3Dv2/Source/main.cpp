@@ -3,7 +3,6 @@
 #include "System/Graphics.h"
 #include "System/File.h"
 #include "Graphic/ShaderManager.h"
-#include "Graphic/VertexFormatManager.h"
 
 
 // Debug
@@ -11,48 +10,6 @@
 #include "Platform/Directx11/Dx11Context.h"
 
 using namespace SE3D2;
-
-
-
-struct Vector
-{
-	Vector(float x, float y, float z)
-		: X(x), Y(y), Z(z)
-	{ }
-
-	Vector()
-		: X(0), Y(0), Z(0)
-	{ }
-
-	float X;
-	float Y;
-	float Z;
-};
-
-struct Vector22
-{
-	Vector22(float x, float y)
-		: X(x), Y(y)
-	{ }
-
-	Vector22()
-		: X(0), Y(0)
-	{ }
-
-	float X;
-	float Y;
-
-};
-
-struct Vertex
-{
-	Vertex(const Vector& pos, const Vector22& color)
-		: Position(pos), Color(color)
-	{ }
-
-	Vector Position;
-	Vector22 Color;
-};
 
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -71,22 +28,29 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	pb->SetFloat("Float", 0.2f);
 	vertex->SetParametersBuffer(pb);
 
-	VertexFormat* vf = VertexFormatManager::Get().GetVertexFormat("VertexShaderTest");
-	vf->Bind();
-
 	///////////////////////////////// RAW DIRECTX /////////////////////////////////////////
 
+	// Input layout
+	D3D11_INPUT_ELEMENT_DESC layout[] = {
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+	};
+
+	ID3D11InputLayout *inputLayout;
+	if (static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetDevice()->CreateInputLayout(layout, 2, vertex->GetSource().c_str(), vertex->GetSource().length(), &inputLayout) != S_OK) { return 1; }
+	static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->IASetInputLayout(inputLayout);
+
 	// Vertex buffer
-	Vertex vertexArray[] = {
-		Vertex(Vector(0.5f,0.5f,0.5f), Vector22(1,0)),
-		Vertex(Vector(0.5f,-0.5f,0.5f), Vector22(0,1)),
-		Vertex(Vector(-0.5f,-0.5f,0.5f), Vector22(0,0)),
-		Vertex(Vector(-0.5f,0.5f,0.5f), Vector22(1,0))
+	CommonVertex vertexArray[] = {
+		{ 0.5f,0.5f,0.5f , 1,0},
+		{ 0.5f,-0.5f,0.5f , 0,1},
+		{ -0.5f,-0.5f,0.5f , 0,0},
+		{ -0.5f,0.5f,0.5f , 1,0}
 	};
 
 	D3D11_BUFFER_DESC vertexBufferDesc = {};
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBufferDesc.ByteWidth = sizeof(Vertex) * 4;
+	vertexBufferDesc.ByteWidth = sizeof(CommonVertex) * 4;
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
 	D3D11_SUBRESOURCE_DATA vertexBufferData = {};
@@ -96,7 +60,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	if (static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexBufferData, &vertexBuffer) != S_OK) { return 1; }
 
 	// Set Vertex buffer
-	UINT stride = sizeof(Vertex);
+	UINT stride = sizeof(CommonVertex);
 	UINT offset = 0;
 	static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
 

@@ -70,9 +70,4 @@ namespace SE3D2
 		return nullptr;
 	}
 
-	void OGContext::SetVertexFormat(VertexFormat* format)
-	{
-		
-	}
-
 }

@@ -170,13 +170,11 @@
     <ClInclude Include="Source\Graphic\API\Shader.h" />
     <ClInclude Include="Source\Graphic\API\VertexFormat.h" />
     <ClInclude Include="Source\Graphic\ShaderManager.h" />
-    <ClInclude Include="Source\Graphic\VertexFormatManager.h" />
     <ClInclude Include="Source\Math\Vector2.h" />
     <ClInclude Include="Source\Math\Vector3.h" />
     <ClInclude Include="Source\Math\Vector4.h" />
     <ClInclude Include="Source\Platform\DirectX11\Dx11ParametersBuffer.h" />
     <ClInclude Include="Source\Platform\Directx11\Dx11Shader.h" />
-    <ClInclude Include="Source\Platform\DirectX11\Dx11VertexFormat.h" />
     <ClInclude Include="Source\Platform\OpenGL\OGContext.h" />
     <ClInclude Include="Source\System\File.h" />
     <ClInclude Include="Source\Utility\DateTime.h" />
