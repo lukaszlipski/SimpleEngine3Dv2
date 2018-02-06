@@ -41,6 +41,8 @@ namespace SE3D2
 			memcpy(mData.get(), copy.mData.get(), mDataSize);
 		}
 
+		virtual ~ParametersBuffer() = default;
+
 		void AddParameter(const Parameter& param) { mVariables.push_back(param); }
 		inline const std::string& GetName() const { return mName; }
 		inline int32 GetDataSize() const { return mDataSize; }

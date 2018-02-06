@@ -17,6 +17,7 @@ namespace SE3D2
 	{
 
 	public:
+		virtual ~Context() = default;
 		
 		static Context* Create(GraphicsAPI api);
 		
@@ -29,6 +30,7 @@ namespace SE3D2
 		virtual void SwapBuffers() = 0;
 		virtual Shader* CreateShader(const std::string& name, ShaderType type) = 0;
 		virtual ParametersBuffer* CreateParametersBuffer(const std::string& name, int32 size, int32 slot) = 0;
+		virtual VertexFormat* CreateVertexFormat(Shader* vertexShader, const VertexFormatDec& vertexFormatDesc) = 0;
 
 	protected:
 		inline Context* SetAPI(GraphicsAPI api) 

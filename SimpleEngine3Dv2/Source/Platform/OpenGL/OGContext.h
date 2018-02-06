@@ -13,7 +13,7 @@ namespace SE3D2
 		virtual Shader* CreateShader(const std::string& name, ShaderType type) override;
 		virtual std::string GetName() override { return "OpenGL"; }
 		virtual ParametersBuffer* CreateParametersBuffer(const std::string& name, int32 size, int32 slot) override;
-
+		virtual VertexFormat* CreateVertexFormat(Shader* vertexShader, const VertexFormatDec& vertexFormatDesc) override;
 
 	private:
 		void* mOpenGLContext;

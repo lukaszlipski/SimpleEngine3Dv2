@@ -65,7 +65,12 @@ namespace SE3D2
 		return nullptr;
 	}
 
-	SE3D2::ParametersBuffer* OGContext::CreateParametersBuffer(const std::string& name, int32 size, int32 slot)
+	ParametersBuffer* OGContext::CreateParametersBuffer(const std::string& name, int32 size, int32 slot)
+	{
+		return nullptr;
+	}
+
+	VertexFormat* OGContext::CreateVertexFormat(Shader* vertexShader, const VertexFormatDec& vertexFormatDesc)
 	{
 		return nullptr;
 	}

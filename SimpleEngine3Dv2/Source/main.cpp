@@ -3,11 +3,12 @@
 #include "System/Graphics.h"
 #include "System/File.h"
 #include "Graphic/ShaderManager.h"
-
+#include "Graphic/VertexFormatManager.h"
 
 // Debug
 #include <d3d11.h>
 #include "Platform/Directx11/Dx11Context.h"
+#include "Platform/DirectX11/Dx11VertexFormat.h"
 
 using namespace SE3D2;
 
@@ -24,21 +25,16 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	vertex->Bind();
 	fragment->Bind();
+
 	ParametersBuffer* pb = vertex->FindParametersBuffer("PerObject");
 	pb->SetFloat("Float", 0.2f);
 	vertex->SetParametersBuffer(pb);
 
+	VertexFormat* vf = VertexFormatManager::Get().GetVertexFormat<CommonVertex>(vertex);
+	vf->Bind();
+
 	///////////////////////////////// RAW DIRECTX /////////////////////////////////////////
 
-	// Input layout
-	D3D11_INPUT_ELEMENT_DESC layout[] = {
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-	};
-
-	ID3D11InputLayout *inputLayout;
-	if (static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetDevice()->CreateInputLayout(layout, 2, vertex->GetSource().c_str(), vertex->GetSource().length(), &inputLayout) != S_OK) { return 1; }
-	static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->IASetInputLayout(inputLayout);
 
 	// Vertex buffer
 	CommonVertex vertexArray[] = {

@@ -19,7 +19,7 @@ namespace SE3D2
 			: mName(name)
 		{}
 
-		~Shader()
+		virtual ~Shader()
 		{
 			for (auto& pb : mParametersBuffers)
 			{

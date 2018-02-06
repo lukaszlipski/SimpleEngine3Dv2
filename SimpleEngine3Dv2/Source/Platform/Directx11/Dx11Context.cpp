@@ -3,6 +3,7 @@
 #include "../System/File.h"
 #include "Dx11Context.h"
 #include "Dx11Shader.h"
+#include "Dx11VertexFormat.h"
 
 namespace SE3D2
 {
@@ -151,6 +152,16 @@ namespace SE3D2
 
 		return new Dx11ParametersBuffer(name, size, slot, ConstBuffer);
 
+	}
+
+	VertexFormat* Dx11Context::CreateVertexFormat(Shader* vertexShader, const VertexFormatDec& vertexFormatDesc)
+	{
+		Dx11VertexFormat* vertexFormat = new Dx11VertexFormat(vertexFormatDesc);
+		if (!vertexFormat->Create(vertexShader))
+		{
+			return nullptr;
+		}
+		return vertexFormat;
 	}
 
 }

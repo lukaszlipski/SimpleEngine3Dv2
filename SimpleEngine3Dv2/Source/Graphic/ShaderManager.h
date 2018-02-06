@@ -34,6 +34,8 @@ namespace SE3D2
 		}
 
 	private:
+		ShaderManager() {}
+
 		std::vector<std::unique_ptr<Shader>> mShaders;
 
 	};

@@ -42,10 +42,10 @@
     <ClCompile Include="Source\Graphic\API\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphic\ShaderManager.cpp">
+    <ClCompile Include="Source\Graphic\API\VertexFormat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Graphic\API\VertexFormat.cpp">
+    <ClCompile Include="Source\Platform\DirectX11\Dx11VertexFormat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -102,6 +102,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Math\Vector4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphic\VertexFormatManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Platform\DirectX11\Dx11VertexFormat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
