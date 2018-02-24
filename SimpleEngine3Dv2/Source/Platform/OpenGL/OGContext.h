@@ -1,5 +1,6 @@
 #pragma once
 #include "..\Graphic\API\Context.h"
+#include "..\Graphic\API\Buffer.h"
 
 namespace SE3D2
 {
@@ -14,6 +15,8 @@ namespace SE3D2
 		virtual std::string GetName() override { return "OpenGL"; }
 		virtual ParametersBuffer* CreateParametersBuffer(const std::string& name, int32 size, int32 slot) override;
 		virtual VertexFormat* CreateVertexFormat(Shader* vertexShader, const VertexFormatDec& vertexFormatDesc) override;
+		virtual Buffer* CreateVertexBuffer(int32 size, void* data = nullptr) override;
+		virtual Buffer* CreateIndexBuffer(int32 size, void* data = nullptr) override;
 
 	private:
 		void* mOpenGLContext;

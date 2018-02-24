@@ -3,6 +3,7 @@
 #include "Shader.h"
 #include <string>
 #include "VertexFormat.h"
+#include "Buffer.h"
 
 namespace SE3D2
 {
@@ -31,6 +32,8 @@ namespace SE3D2
 		virtual Shader* CreateShader(const std::string& name, ShaderType type) = 0;
 		virtual ParametersBuffer* CreateParametersBuffer(const std::string& name, int32 size, int32 slot) = 0;
 		virtual VertexFormat* CreateVertexFormat(Shader* vertexShader, const VertexFormatDec& vertexFormatDesc) = 0;
+		virtual Buffer* CreateVertexBuffer(int32 size, void* data = nullptr) = 0;
+		virtual Buffer* CreateIndexBuffer(int32 size, void* data = nullptr) = 0;
 
 	protected:
 		inline Context* SetAPI(GraphicsAPI api) 

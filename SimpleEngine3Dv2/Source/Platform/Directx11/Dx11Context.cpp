@@ -4,6 +4,7 @@
 #include "Dx11Context.h"
 #include "Dx11Shader.h"
 #include "Dx11VertexFormat.h"
+#include "Dx11Buffer.h"
 
 namespace SE3D2
 {
@@ -137,20 +138,16 @@ namespace SE3D2
 		return nullptr;
 	}
 
-	SE3D2::ParametersBuffer* Dx11Context::CreateParametersBuffer(const std::string& name, int32 size, int32 slot)
+	ParametersBuffer* Dx11Context::CreateParametersBuffer(const std::string& name, int32 size, int32 slot)
 	{
-		D3D11_BUFFER_DESC ConstBufferDesc = {};
-		ConstBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		ConstBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		ConstBufferDesc.ByteWidth = size;
 
-		ID3D11Buffer* ConstBuffer;
-		if (mD3D11Device->CreateBuffer(&ConstBufferDesc, 0, &ConstBuffer) != S_OK)
+		Dx11ConstantBuffer* ConstantBuffer = new Dx11ConstantBuffer(size);
+		if (ConstantBuffer->Create() != true)
 		{
 			return nullptr;
 		}
 
-		return new Dx11ParametersBuffer(name, size, slot, ConstBuffer);
+		return new Dx11ParametersBuffer(name, size, slot, ConstantBuffer);
 
 	}
 
@@ -162,6 +159,26 @@ namespace SE3D2
 			return nullptr;
 		}
 		return vertexFormat;
+	}
+
+	Buffer* Dx11Context::CreateVertexBuffer(int32 size, void* data /*= nullptr*/)
+	{
+		Buffer* buffer = new Dx11Buffer<Dx11VertexBufferPolicy>(size);
+		if (data)
+		{
+			buffer->Create(data);
+		}
+		return buffer;
+	}
+
+	Buffer* Dx11Context::CreateIndexBuffer(int32 size, void* data /*= nullptr*/)
+	{
+		Buffer* buffer = new Dx11Buffer<Dx11IndexBufferPolicy>(size);
+		if (data)
+		{
+			buffer->Create(data);
+		}
+		return buffer;
 	}
 
 }

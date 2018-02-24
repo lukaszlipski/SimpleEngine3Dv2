@@ -48,6 +48,9 @@
     <ClCompile Include="Source\Platform\DirectX11\Dx11VertexFormat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Platform\DirectX11\Dx11Buffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\System\Window.h">
@@ -108,6 +111,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Platform\DirectX11\Dx11VertexFormat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphic\API\Buffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Platform\DirectX11\Dx11Buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

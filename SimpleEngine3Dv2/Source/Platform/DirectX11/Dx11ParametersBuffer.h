@@ -3,6 +3,7 @@
 #include <d3d11.h>
 #include "..\System\Graphics.h"
 #include "Dx11Context.h"
+#include "Dx11Buffer.h"
 
 namespace SE3D2
 {
@@ -10,8 +11,8 @@ namespace SE3D2
 	{
 
 	public:
-		Dx11ParametersBuffer(const std::string& name, int32 size, int32 slot, ID3D11Buffer* buffer)
-			: ParametersBuffer(name, size, slot), mConstantBuffer(buffer)
+		Dx11ParametersBuffer(const std::string& name, int32 size, int32 slot, Dx11ConstantBuffer* buffer)
+			: ParametersBuffer(name, size, slot), mBuffer(buffer)
 		{ }
 
 		virtual bool SetFloat(const std::string& name, float value) override
@@ -42,25 +43,24 @@ namespace SE3D2
 			return false;
 		}
 
-		ID3D11Buffer* GetConstantBuffer() const { return mConstantBuffer; }
+		ID3D11Buffer* GetConstantBuffer() const { return mBuffer->GetBuffer(); }
 
 		virtual void Update() override
 		{
 			if (mDirty)
 			{
-				Dx11Context* dic = static_cast<Dx11Context*>(Graphics::Get().GetContext());
-				dic->GetImmediateContext()->UpdateSubresource(mConstantBuffer, 0, 0, mData.get(), 0, 0);
+				mBuffer->Update(mData.get());
 				SetDirty(false);
 			}
 		}
 
 		virtual void ClearResources() override
 		{
-			mConstantBuffer->Release();
+			mBuffer->ClearResource();
 		}
 
 	private:
-		ID3D11Buffer* mConstantBuffer;
+		Dx11ConstantBuffer* mBuffer;
 
 	};
 }

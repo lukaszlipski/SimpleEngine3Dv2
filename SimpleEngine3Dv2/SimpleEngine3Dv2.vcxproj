@@ -156,6 +156,7 @@
     <ClCompile Include="Source\Graphic\API\Shader.cpp" />
     <ClCompile Include="Source\Graphic\API\VertexFormat.cpp" />
     <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\Platform\DirectX11\Dx11Buffer.cpp" />
     <ClCompile Include="Source\Platform\Directx11\Dx11Context.cpp" />
     <ClCompile Include="Source\Platform\Directx11\Dx11Shader.cpp" />
     <ClCompile Include="Source\Platform\DirectX11\Dx11VertexFormat.cpp" />
@@ -165,6 +166,7 @@
     <ClCompile Include="Source\System\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Graphic\API\Buffer.h" />
     <ClInclude Include="Source\Graphic\API\Context.h" />
     <ClInclude Include="Source\Graphic\API\ParametersBuffer.h" />
     <ClInclude Include="Source\Graphic\API\Shader.h" />
@@ -176,6 +178,7 @@
     <ClInclude Include="Source\Math\Vector4.h" />
     <ClInclude Include="Source\Platform\DirectX11\Dx11ParametersBuffer.h" />
     <ClInclude Include="Source\Platform\Directx11\Dx11Shader.h" />
+    <ClInclude Include="Source\Platform\DirectX11\Dx11Buffer.h" />
     <ClInclude Include="Source\Platform\DirectX11\Dx11VertexFormat.h" />
     <ClInclude Include="Source\Platform\OpenGL\OGContext.h" />
     <ClInclude Include="Source\System\File.h" />

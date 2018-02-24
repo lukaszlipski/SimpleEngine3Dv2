@@ -15,10 +15,11 @@ namespace SE3D2
 		virtual ParametersBuffer* CreateParametersBuffer(const std::string& name, int32 size, int32 slot) override;
 		virtual std::string GetName() override { return "DirectX11"; }
 		virtual VertexFormat* CreateVertexFormat(Shader* vertexShader, const VertexFormatDec& vertexFormatDesc) override;
+		virtual Buffer* CreateVertexBuffer(int32 size, void* data = nullptr) override;
+		virtual Buffer* CreateIndexBuffer(int32 size, void* data = nullptr) override;
 
 		inline struct ID3D11Device* GetDevice() const { return mD3D11Device; }
 		inline struct ID3D11DeviceContext* GetImmediateContext() const { return mD3D11DeviceCtx; }
-
 
 	private:
 		struct ID3D11Device* mD3D11Device;

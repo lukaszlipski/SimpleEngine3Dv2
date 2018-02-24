@@ -75,4 +75,14 @@ namespace SE3D2
 		return nullptr;
 	}
 
+	Buffer* OGContext::CreateVertexBuffer(int32 size, void* data /*= nullptr*/)
+	{
+		return nullptr;
+	}
+
+	Buffer* OGContext::CreateIndexBuffer(int32 size, void* data /*= nullptr*/)
+	{
+		return nullptr;
+	}
+
 }

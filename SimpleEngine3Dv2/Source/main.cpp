@@ -8,10 +8,9 @@
 // Debug
 #include <d3d11.h>
 #include "Platform/Directx11/Dx11Context.h"
-#include "Platform/DirectX11/Dx11VertexFormat.h"
+#include "Platform/DirectX11/Dx11Buffer.h"
 
 using namespace SE3D2;
-
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -33,9 +32,6 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	VertexFormat* vf = VertexFormatManager::Get().GetVertexFormat<CommonVertex>(vertex);
 	vf->Bind();
 
-	///////////////////////////////// RAW DIRECTX /////////////////////////////////////////
-
-
 	// Vertex buffer
 	CommonVertex vertexArray[] = {
 		{ 0.5f,0.5f,0.5f , 1,0},
@@ -44,21 +40,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		{ -0.5f,0.5f,0.5f , 1,0}
 	};
 
-	D3D11_BUFFER_DESC vertexBufferDesc = {};
-	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBufferDesc.ByteWidth = sizeof(CommonVertex) * 4;
-	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-
-	D3D11_SUBRESOURCE_DATA vertexBufferData = {};
-	vertexBufferData.pSysMem = vertexArray;
-
-	ID3D11Buffer *vertexBuffer;
-	if (static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexBufferData, &vertexBuffer) != S_OK) { return 1; }
-
-	// Set Vertex buffer
-	UINT stride = sizeof(CommonVertex);
-	UINT offset = 0;
-	static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+	Buffer* vbuffer = Graphics::Get().GetContext()->CreateVertexBuffer(sizeof(CommonVertex) * 4, &vertexArray);
 
 	// Create indices
 	uint32_t indicesArray[] = {
@@ -66,19 +48,20 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		0,2,3
 	};
 
-	D3D11_BUFFER_DESC indicesBufferDesc = {};
-	indicesBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	indicesBufferDesc.ByteWidth = sizeof(uint32_t) * 6;
-	indicesBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	Buffer* ibuffer = Graphics::Get().GetContext()->CreateIndexBuffer(sizeof(uint32_t) * 6, &indicesArray);
 
-	D3D11_SUBRESOURCE_DATA indicesBufferData = {};
-	indicesBufferData.pSysMem = indicesArray;
+	///////////////////////////////// RAW DIRECTX /////////////////////////////////////////
 
-	ID3D11Buffer *indicesBuffer;
-	static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetDevice()->CreateBuffer(&indicesBufferDesc, &indicesBufferData, &indicesBuffer);
+	// Set Vertex buffer
+	ID3D11Buffer *vertexBuffer = static_cast<Dx11VertexBuffer*>(vbuffer)->GetBuffer();
+	UINT stride = sizeof(CommonVertex);
+	UINT offset = 0;
+	static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
 
-	// Set Indices buffer;
+	// Set Indices buffer
+	ID3D11Buffer *indicesBuffer = static_cast<Dx11IndexBuffer*>(ibuffer)->GetBuffer();
 	static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->IASetIndexBuffer(indicesBuffer, DXGI_FORMAT_R32_UINT, 0);
+
 	static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	//////////////////////////////////////////////////////////////////////////
