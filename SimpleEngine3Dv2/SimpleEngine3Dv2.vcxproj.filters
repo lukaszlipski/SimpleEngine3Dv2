@@ -119,5 +119,8 @@
     <ClInclude Include="Source\Platform\DirectX11\Dx11Buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Platform\OpenGL\OGShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

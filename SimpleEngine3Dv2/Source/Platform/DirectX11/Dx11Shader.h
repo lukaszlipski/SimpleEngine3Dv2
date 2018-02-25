@@ -85,6 +85,11 @@ namespace SE3D2
 			return false;
 		}
 
+		if (!Compiled)
+		{
+			SaveCompiledFile(name, mSource.data(), static_cast<int32>(mSource.size()));
+		}
+
 		return CollectResources(mSource);
 	}
 

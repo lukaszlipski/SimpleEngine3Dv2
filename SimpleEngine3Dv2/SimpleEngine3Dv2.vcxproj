@@ -181,6 +181,7 @@
     <ClInclude Include="Source\Platform\DirectX11\Dx11Buffer.h" />
     <ClInclude Include="Source\Platform\DirectX11\Dx11VertexFormat.h" />
     <ClInclude Include="Source\Platform\OpenGL\OGContext.h" />
+    <ClInclude Include="Source\Platform\OpenGL\OGShader.h" />
     <ClInclude Include="Source\System\File.h" />
     <ClInclude Include="Source\Utility\DateTime.h" />
     <ClInclude Include="Source\Utility\Path.h" />

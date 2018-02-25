@@ -1,6 +1,7 @@
 #include "OGContext.h"
 #include <GL/glew.h>
 #include "../System/Window.h"
+#include "OGShader.h"
 
 namespace SE3D2
 {
@@ -62,6 +63,27 @@ namespace SE3D2
 
 	Shader* OGContext::CreateShader(const std::string& name, ShaderType type)
 	{
+		Shader* NewShader = nullptr;
+		switch (type)
+		{
+		case ShaderType::VERTEX:
+		{
+			NewShader = new OGShader<OGVertexShaderPolicy>(name);
+			break;
+		}
+		case ShaderType::FRAGMET:
+		{
+			NewShader = new OGShader<OGFragmentShaderPolicy>(name);
+			break;
+		}
+		}
+
+		if (NewShader->Compile(name))
+		{
+			return NewShader;
+		}
+		delete NewShader;
+
 		return nullptr;
 	}
 

@@ -9,6 +9,8 @@
 #include <d3d11.h>
 #include "Platform/Directx11/Dx11Context.h"
 #include "Platform/DirectX11/Dx11Buffer.h"
+#include "GL/glew.h"
+#include "Platform/OpenGL/OGShader.h"
 
 using namespace SE3D2;
 
@@ -17,7 +19,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	File::Get().Startup();
 	Window::Get().Startup(800, 600, "SimpleEngine3Dv2");
-	Graphics::Get().Startup(GraphicsAPI::DIRECTX11, 800, 600);
+	Graphics::Get().Startup(GraphicsAPI::OPENGL, 800, 600);
 
 	Shader* vertex = ShaderManager::Get().GetShader<ShaderType::VERTEX>("VertexShaderTest");
 	Shader* fragment = ShaderManager::Get().GetShader<ShaderType::FRAGMET>("PixelShaderTest");
@@ -25,22 +27,22 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	vertex->Bind();
 	fragment->Bind();
 
-	ParametersBuffer* pb = vertex->FindParametersBuffer("PerObject");
-	pb->SetFloat("Float", 0.2f);
-	vertex->SetParametersBuffer(pb);
+	//ParametersBuffer* pb = vertex->FindParametersBuffer("PerObject");
+	//pb->SetFloat("Float", 0.2f);
+	//vertex->SetParametersBuffer(pb);
 
-	VertexFormat* vf = VertexFormatManager::Get().GetVertexFormat<CommonVertex>(vertex);
-	vf->Bind();
+	//VertexFormat* vf = VertexFormatManager::Get().GetVertexFormat<CommonVertex>(vertex);
+	//vf->Bind();
 
 	// Vertex buffer
 	CommonVertex vertexArray[] = {
 		{ 0.5f,0.5f,0.5f , 1,0},
 		{ 0.5f,-0.5f,0.5f , 0,1},
 		{ -0.5f,-0.5f,0.5f , 0,0},
-		{ -0.5f,0.5f,0.5f , 1,0}
+		//{ -0.5f,0.5f,0.5f , 1,0}
 	};
 
-	Buffer* vbuffer = Graphics::Get().GetContext()->CreateVertexBuffer(sizeof(CommonVertex) * 4, &vertexArray);
+	//Buffer* vbuffer = Graphics::Get().GetContext()->CreateVertexBuffer(sizeof(CommonVertex) * 4, &vertexArray);
 
 	// Create indices
 	uint32_t indicesArray[] = {
@@ -48,21 +50,45 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		0,2,3
 	};
 
-	Buffer* ibuffer = Graphics::Get().GetContext()->CreateIndexBuffer(sizeof(uint32_t) * 6, &indicesArray);
+	//Buffer* ibuffer = Graphics::Get().GetContext()->CreateIndexBuffer(sizeof(uint32_t) * 6, &indicesArray);
+
+	///////////////////////////////// RAW OPENGL  /////////////////////////////////////////
+
+	uint32 pipe;
+	glGenProgramPipelines(1, &pipe);
+	glUseProgramStages(pipe, GL_VERTEX_SHADER_BIT, static_cast<OGVertexShader*>(vertex)->GetProgram());
+	glUseProgramStages(pipe, GL_FRAGMENT_SHADER_BIT, static_cast<OGFragmentShader*>(fragment)->GetProgram());
+
+	glBindProgramPipeline(pipe);
+
+	uint32_t VAO;
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+	uint32_t VBO;
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexArray), vertexArray, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+	//////////////////////////////////////////////////////////////////////////
 
 	///////////////////////////////// RAW DIRECTX /////////////////////////////////////////
 
 	// Set Vertex buffer
-	ID3D11Buffer *vertexBuffer = static_cast<Dx11VertexBuffer*>(vbuffer)->GetBuffer();
-	UINT stride = sizeof(CommonVertex);
-	UINT offset = 0;
-	static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+	//ID3D11Buffer *vertexBuffer = static_cast<Dx11VertexBuffer*>(vbuffer)->GetBuffer();
+	//UINT stride = sizeof(CommonVertex);
+	//UINT offset = 0;
+	//static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
 
 	// Set Indices buffer
-	ID3D11Buffer *indicesBuffer = static_cast<Dx11IndexBuffer*>(ibuffer)->GetBuffer();
-	static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->IASetIndexBuffer(indicesBuffer, DXGI_FORMAT_R32_UINT, 0);
+	//ID3D11Buffer *indicesBuffer = static_cast<Dx11IndexBuffer*>(ibuffer)->GetBuffer();
+	//static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->IASetIndexBuffer(indicesBuffer, DXGI_FORMAT_R32_UINT, 0);
 
-	static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	//////////////////////////////////////////////////////////////////////////
 
@@ -71,8 +97,15 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		Window::Get().Update();
 		Graphics::Get().Clear();
 		///////////////////////////////// RAW DIRECTX /////////////////////////////////////////
-		static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->DrawIndexed(6, 0, 0);
+		//static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->DrawIndexed(6, 0, 0);
 		//////////////////////////////////////////////////////////////////////////
+
+		///////////////////////////////// RAW OPENGL  /////////////////////////////////////////
+		glBindVertexArray(VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glBindVertexArray(0);
+		//////////////////////////////////////////////////////////////////////////
+
 		Graphics::Get().Update();
 	}
 
