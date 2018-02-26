@@ -37,7 +37,7 @@ namespace SE3D2
 	void Dx11PixelShaderPolicy::SetConstantBuffer(Dx11ParametersBuffer* pb)
 	{
 		ID3D11Buffer* cb = pb->GetConstantBuffer();
-		static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->PSSetConstantBuffers(0, 1, &cb);
+		static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->PSSetConstantBuffers(pb->GetSlot(), 1, &cb);
 	}
 
 	bool Dx11VertexShaderPolicy::Compile(const std::string& name, std::string& source, bool shouldCompile)
@@ -69,7 +69,7 @@ namespace SE3D2
 	void Dx11VertexShaderPolicy::SetConstantBuffer(Dx11ParametersBuffer* pb)
 	{
 		ID3D11Buffer* cb = pb->GetConstantBuffer();
-		static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->VSSetConstantBuffers(0, 1, &cb);
+		static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->VSSetConstantBuffers(pb->GetSlot(), 1, &cb);
 	}
 
 }

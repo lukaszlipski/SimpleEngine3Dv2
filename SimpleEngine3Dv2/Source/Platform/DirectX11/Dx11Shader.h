@@ -5,6 +5,7 @@
 #include <string>
 #include <d3dcompiler.h>
 #include "..\System\Graphics.h"
+#include <assert.h>
 
 namespace SE3D2
 {
@@ -47,7 +48,7 @@ namespace SE3D2
 		virtual bool Compile(const std::string& name) override;
 		virtual void Bind() override { mShaderPolicy.Bind(); }
 		virtual std::string GetExtension() const override { return "hlsl"; }
-		virtual void SetParametersBuffer(ParametersBuffer* pb) override;
+		virtual void SetParametersBuffer(ParametersBuffer* pb, uint32 globalSlot = 0) override;
 
 	protected:
 		virtual bool CollectResources(const std::string& source) override;
@@ -94,7 +95,7 @@ namespace SE3D2
 	}
 
 	template<typename T>
-	void Dx11Shader<T>::SetParametersBuffer(ParametersBuffer* pb)
+	void Dx11Shader<T>::SetParametersBuffer(ParametersBuffer* pb, uint32 globalSlot)
 	{
 		for (auto& paramBuffer : mParametersBuffers)
 		{
@@ -191,6 +192,7 @@ namespace SE3D2
 			{
 				// #TODO: add to log (unsupported type)
 				param.mType = ParameterType::NONE;
+				assert(false);
 			}
 
 			Buffer->AddParameter(param);

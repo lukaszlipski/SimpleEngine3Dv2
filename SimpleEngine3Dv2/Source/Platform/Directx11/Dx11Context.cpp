@@ -102,7 +102,7 @@ namespace SE3D2
 
 	void Dx11Context::Clear()
 	{
-		const float ClearColor[] = { 0.0f,0.0f,1.0f,1.0f };
+		const float ClearColor[] = { 0.0f,0.0f,0.0f,1.0f };
 		mD3D11DeviceCtx->ClearRenderTargetView(mBackBufferRT, ClearColor);
 		mD3D11DeviceCtx->ClearDepthStencilView(mDepthStencilV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	}

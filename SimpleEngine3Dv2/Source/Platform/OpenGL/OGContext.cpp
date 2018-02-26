@@ -2,6 +2,8 @@
 #include <GL/glew.h>
 #include "../System/Window.h"
 #include "OGShader.h"
+#include "OGBuffer.h"
+#include "OGParamtersBuffer.h"
 
 namespace SE3D2
 {
@@ -89,7 +91,13 @@ namespace SE3D2
 
 	ParametersBuffer* OGContext::CreateParametersBuffer(const std::string& name, int32 size, int32 slot)
 	{
-		return nullptr;
+		OGUniformBlockBuffer* ConstantBuffer = new OGUniformBlockBuffer(size);
+		if (ConstantBuffer->Create() != true)
+		{
+			return nullptr;
+		}
+
+		return new OGParametersBuffer(name, size, slot, ConstantBuffer);
 	}
 
 	VertexFormat* OGContext::CreateVertexFormat(Shader* vertexShader, const VertexFormatDec& vertexFormatDesc)

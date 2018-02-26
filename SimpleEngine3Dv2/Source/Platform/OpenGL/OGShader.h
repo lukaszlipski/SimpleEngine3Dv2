@@ -3,6 +3,8 @@
 #include "GL\glew.h"
 #include "..\Utility\Path.h"
 #include "..\System\Graphics.h"
+#include <assert.h>
+#include "OGParamtersBuffer.h"
 
 namespace SE3D2
 {
@@ -34,7 +36,7 @@ namespace SE3D2
 
 		virtual bool Compile(const std::string& name) override;
 		virtual void Bind() override;
-		virtual void SetParametersBuffer(ParametersBuffer* pb) override;
+		virtual void SetParametersBuffer(ParametersBuffer* pb, uint32 globalSlot = 0) override;
 		virtual std::string GetExtension() const override { return "glsl"; }
 
 		inline uint32 GetProgram() const { return mProgram; }
@@ -196,47 +198,106 @@ namespace SE3D2
 		// Clear previous buffer if there was any
 		mParametersBuffers.clear();
 
-		//GLint NumUniforms;
-		//GLint NumBlockUniforms;
-		//glGetProgramInterfaceiv(mProgram, GL_UNIFORM, GL_ACTIVE_RESOURCES, &NumUniforms);
-		//glGetProgramInterfaceiv(mProgram, GL_UNIFORM_BLOCK, GL_ACTIVE_RESOURCES, &NumBlockUniforms);
+		GLint NumUniforms;
+		GLint NumBlockUniforms;
+		glGetProgramInterfaceiv(mProgram, GL_UNIFORM, GL_ACTIVE_RESOURCES, &NumUniforms);
+		glGetProgramInterfaceiv(mProgram, GL_UNIFORM_BLOCK, GL_ACTIVE_RESOURCES, &NumBlockUniforms);
 
-		//GLenum PropertiesBlock[3] = { GL_NAME_LENGTH, GL_BUFFER_BINDING, GL_BUFFER_DATA_SIZE };
-		//for (int32_t i = 0; i < NumBlockUniforms; ++i)
-		//{
-		//	GLint ValuesBlock[3];
-		//	glGetProgramResourceiv(mProgram, GL_UNIFORM_BLOCK, i, 3, PropertiesBlock, 3, 0, ValuesBlock);
-		//	char* Name = (char*)alloca(ValuesBlock[0]);
-		//	glGetProgramResourceName(mProgram, GL_UNIFORM_BLOCK, i, ValuesBlock[0], &ValuesBlock[0], Name);
-		//	GLuint location = glGetUniformBlockIndex(mProgram, Name);
+		GLenum PropertiesBlock[3] = { GL_NAME_LENGTH, GL_BUFFER_BINDING, GL_BUFFER_DATA_SIZE };
+		for (int32_t i = 0; i < NumBlockUniforms; ++i)
+		{
+			GLint ValuesBlock[3];
+			glGetProgramResourceiv(mProgram, GL_UNIFORM_BLOCK, i, 3, PropertiesBlock, 3, 0, ValuesBlock);
+			char* Name = (char*)alloca(ValuesBlock[0]);
+			glGetProgramResourceName(mProgram, GL_UNIFORM_BLOCK, i, ValuesBlock[0], &ValuesBlock[0], Name);
+			GLuint location = glGetUniformBlockIndex(mProgram, Name);
 
-		//	// Create parameters buffer and add to mParametersBuffer
-		//	ParametersBuffer* ParamBuffer = Graphics::Get().GetContext()->CreateParametersBuffer(Name, ValuesBlock[2], location);
-		//	if (!ParamBuffer)
-		//	{
-		//		return false;
-		//	}
-		//	std::unique_ptr<ParametersBuffer> UniqueBuffer(ParamBuffer);
-		//	mParametersBuffers.push_back(std::move(UniqueBuffer));
-		//}
+			// Create parameters buffer and add to mParametersBuffer
+			ParametersBuffer* ParamBuffer = Graphics::Get().GetContext()->CreateParametersBuffer(Name, ValuesBlock[2], location);
+			if (!ParamBuffer)
+			{
+				return false;
+			}
+			std::unique_ptr<ParametersBuffer> UniqueBuffer(ParamBuffer);
+			mParametersBuffers.push_back(std::move(UniqueBuffer));
+		}
 
-		//GLenum Properties[5] = { GL_BLOCK_INDEX, GL_TYPE, GL_OFFSET, GL_NAME_LENGTH, GL_LOCATION };
-		//for (int32_t i = 0; i < NumUniforms; ++i)
-		//{
-		//	GLint Values[5];
-		//	glGetProgramResourceiv(mProgram, GL_UNIFORM, i, 5, Properties, 5, 0, Values);
-		//	char* Name = (char*)alloca(Values[3]);
-		//	glGetProgramResourceName(mProgram, GL_UNIFORM, i, Values[3], &Values[3], Name);
+		GLenum Properties[6] = { GL_BLOCK_INDEX, GL_TYPE, GL_OFFSET, GL_NAME_LENGTH, GL_LOCATION, GL_ARRAY_SIZE };
+		for (int32_t i = 0; i < NumUniforms; ++i)
+		{
+			GLint Values[6];
+			glGetProgramResourceiv(mProgram, GL_UNIFORM, i, 6, Properties, 6, 0, Values);
+			char* Name = (char*)alloca(Values[3]);
+			glGetProgramResourceName(mProgram, GL_UNIFORM, i, Values[3], &Values[3], Name);
 
-		//}
+			Parameter param;
+			param.mName = Name;
+			param.mOffset = Values[2];
+			
+			if (Values[1] == GL_FLOAT) 
+			{
+				param.mType = ParameterType::FLOAT;
+			}
+			else if (Values[1] == GL_INT)
+			{
+				param.mType = ParameterType::INT32;
+			}
+			else if (Values[1] = GL_FLOAT_VEC2)
+			{
+				param.mType = ParameterType::VECTOR2;
+			}
+			else if (Values[1] = GL_FLOAT_VEC3)
+			{
+				param.mType = ParameterType::VECTOR3;
+			}
+			else if (Values[1] = GL_FLOAT_VEC4)
+			{
+				param.mType = ParameterType::VECTOR4;
+			}
+			else if (Values[1] = GL_FLOAT_MAT3)
+			{
+				param.mType = ParameterType::MATRIX3x3;
+			}
+			else if (Values[1] = GL_FLOAT_MAT4)
+			{
+				param.mType = ParameterType::MATRIX4x4;
+			}
+			else
+			{
+				// #TODO: add to log (unsupported type)
+				param.mType = ParameterType::NONE;
+				assert(false);
+			}
+
+			for (auto& buffer : mParametersBuffers)
+			{
+				if (buffer->GetSlot() == Values[0])
+				{
+					buffer->AddParameter(param);
+				}
+			}
+
+		}
 
 		return true;
 	}
 
 	template<typename T>
-	void OGShader<T>::SetParametersBuffer(ParametersBuffer* pb)
+	void OGShader<T>::SetParametersBuffer(ParametersBuffer* pb, uint32 globalSlot)
 	{
-
+		for (auto& paramBuffer : mParametersBuffers)
+		{
+			if (paramBuffer->GetName() == pb->GetName() && paramBuffer->GetDataSize() == pb->GetDataSize() && paramBuffer->GetSlot() == pb->GetSlot())
+			{
+				pb->Update();
+				OGParametersBuffer* OgPb = static_cast<OGParametersBuffer*>(pb);
+				
+				glBindBuffer(GL_UNIFORM_BUFFER, OgPb->GetBuffer()->GetBuffer());
+				glUniformBlockBinding(GetProgram(), OgPb->GetSlot(), globalSlot);
+				glBindBufferBase(GL_UNIFORM_BUFFER, globalSlot, OgPb->GetBuffer()->GetBuffer());
+				glBindBuffer(GL_UNIFORM_BUFFER, 0);
+			}
+		}
 	}
 
 	template<typename T>

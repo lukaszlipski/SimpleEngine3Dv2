@@ -125,5 +125,8 @@
     <ClInclude Include="Source\Platform\OpenGL\OGBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Platform\OpenGL\OGParamtersBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

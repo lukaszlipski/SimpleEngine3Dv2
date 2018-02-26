@@ -25,12 +25,17 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	Shader* vertex = ShaderManager::Get().GetShader<ShaderType::VERTEX>("VertexShaderTest");
 	Shader* fragment = ShaderManager::Get().GetShader<ShaderType::FRAGMET>("PixelShaderTest");
 
-	vertex->Bind();
-	fragment->Bind();
+	//vertex->Bind();
+	//fragment->Bind();
 
-	//ParametersBuffer* pb = vertex->FindParametersBuffer("PerObject");
-	//pb->SetFloat("Float", 0.2f);
-	//vertex->SetParametersBuffer(pb);
+	ParametersBuffer* pb = vertex->FindParametersBuffer("PerObject");
+	pb->SetFloat("Float", 0.2f);
+	vertex->SetParametersBuffer(pb);
+
+	ParametersBuffer* pb2 = fragment->FindParametersBuffer("PerObject2");
+	pb2->SetFloat("Float", 1.0f);
+	fragment->SetParametersBuffer(pb2,1);
+
 
 	//VertexFormat* vf = VertexFormatManager::Get().GetVertexFormat<CommonVertex>(vertex);
 	//vf->Bind();
@@ -59,47 +64,39 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	glGenProgramPipelines(1, &pipe);
 	glUseProgramStages(pipe, GL_VERTEX_SHADER_BIT, static_cast<OGVertexShader*>(vertex)->GetProgram());
 	glUseProgramStages(pipe, GL_FRAGMENT_SHADER_BIT, static_cast<OGFragmentShader*>(fragment)->GetProgram());
-
+	
 	glBindProgramPipeline(pipe);
-
+	
 	uint32_t VAO;
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
-
+	
 	OGVertexBuffer vb(sizeof(vertexArray));
 	vb.Create(vertexArray);
-
+	
 	OGIndexBuffer ib(sizeof(indicesArray));
 	ib.Create(indicesArray);
-
-	OGUniformBlockBuffer ub(8);
-	Vector2 data{1,0};
-	ub.Create(&data);
-	glBindBuffer(GL_UNIFORM_BUFFER, ub.GetBuffer());
-	glUniformBlockBinding(((OGVertexShader*)fragment)->GetProgram(), 0, 1);
-	glBindBufferBase(GL_UNIFORM_BUFFER, 1, ub.GetBuffer());
-
-
+	
+	
 	glBindBuffer(GL_ARRAY_BUFFER, vb.GetBuffer());
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
-
 	//////////////////////////////////////////////////////////////////////////
 
 	///////////////////////////////// RAW DIRECTX /////////////////////////////////////////
 
-	// Set Vertex buffer
+	//// Set Vertex buffer
 	//ID3D11Buffer *vertexBuffer = static_cast<Dx11VertexBuffer*>(vbuffer)->GetBuffer();
 	//UINT stride = sizeof(CommonVertex);
 	//UINT offset = 0;
 	//static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-
-	// Set Indices buffer
+	//
+	//// Set Indices buffer
 	//ID3D11Buffer *indicesBuffer = static_cast<Dx11IndexBuffer*>(ibuffer)->GetBuffer();
 	//static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->IASetIndexBuffer(indicesBuffer, DXGI_FORMAT_R32_UINT, 0);
-
+	//
 	//static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	//////////////////////////////////////////////////////////////////////////
@@ -114,7 +111,6 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 		///////////////////////////////// RAW OPENGL  /////////////////////////////////////////
 		glBindVertexArray(VAO);
-		//glDrawArrays(GL_TRIANGLES, 0, 3);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 		//////////////////////////////////////////////////////////////////////////
