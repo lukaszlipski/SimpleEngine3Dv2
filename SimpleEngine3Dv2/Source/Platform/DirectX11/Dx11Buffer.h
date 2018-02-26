@@ -38,54 +38,67 @@ namespace SE3D2
 			: Buffer(size)
 		{ }
 
-		virtual bool Create(void* data = nullptr) override
-		{
+		virtual bool Create(void* data = nullptr) override;
 
-			// Set type for buffer based on policy
-			mType = mPolicy.GetType();
+		virtual bool Update(void* data) override;
 
-			D3D11_BUFFER_DESC BufferDesc = mPolicy.GetBufferDesc(GetSize());
-
-			D3D11_SUBRESOURCE_DATA* BufferData = nullptr;
-
-			// If data is not present, create empty buffer
-			if (data)
-			{
-				D3D11_SUBRESOURCE_DATA ResourceData = {};
-				ResourceData.pSysMem = data;
-				BufferData = &ResourceData;
-			}
-
-			if (static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetDevice()->CreateBuffer(&BufferDesc, BufferData, &mBuffer) != S_OK)
-			{ 
-				return false; 
-			}
-
-			return true;
-		}
-
-		virtual bool Update(void* data) override
-		{
-			Dx11Context* dic = static_cast<Dx11Context*>(Graphics::Get().GetContext());
-			dic->GetImmediateContext()->UpdateSubresource(mBuffer, 0, 0, data, 0, 0);
-
-			// #TODO: check for operation result
-
-			return true;
-		}
-
+		virtual void ClearResource() override;
 		inline ID3D11Buffer* GetBuffer() const { return mBuffer; }
-
-		virtual void ClearResource() override
-		{
-			mBuffer->Release();
-		}
 
 	private:
 		T mPolicy;
 		ID3D11Buffer* mBuffer;
 
 	};
+
+	template<typename T>
+	bool Dx11Buffer<T>::Create(void* data /*= nullptr*/)
+	{
+
+		// Set type for buffer based on policy
+		mType = mPolicy.GetType();
+
+		D3D11_BUFFER_DESC BufferDesc = mPolicy.GetBufferDesc(GetSize());
+
+		D3D11_SUBRESOURCE_DATA* BufferData = nullptr;
+
+		// If data is not present, create empty buffer
+		if (data)
+		{
+			D3D11_SUBRESOURCE_DATA ResourceData = {};
+			ResourceData.pSysMem = data;
+			BufferData = &ResourceData;
+		}
+
+		if (static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetDevice()->CreateBuffer(&BufferDesc, BufferData, &mBuffer) != S_OK)
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	template<typename T>
+	bool Dx11Buffer<T>::Update(void* data)
+	{
+
+		if (data)
+		{
+			Dx11Context* dic = static_cast<Dx11Context*>(Graphics::Get().GetContext());
+			dic->GetImmediateContext()->UpdateSubresource(mBuffer, 0, 0, data, 0, 0);
+
+			// #TODO: check for operation result
+		}
+
+		return true;
+	}
+
+	template<typename T>
+	void Dx11Buffer<T>::ClearResource()
+	{
+		mBuffer->Release();
+	}
+
 
 	using Dx11VertexBuffer = Dx11Buffer<Dx11VertexBufferPolicy>;
 	using Dx11IndexBuffer = Dx11Buffer<Dx11IndexBufferPolicy>;

@@ -11,6 +11,7 @@
 #include "Platform/DirectX11/Dx11Buffer.h"
 #include "GL/glew.h"
 #include "Platform/OpenGL/OGShader.h"
+#include "Platform/OpenGL/OGBuffer.h"
 
 using namespace SE3D2;
 
@@ -39,7 +40,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		{ 0.5f,0.5f,0.5f , 1,0},
 		{ 0.5f,-0.5f,0.5f , 0,1},
 		{ -0.5f,-0.5f,0.5f , 0,0},
-		//{ -0.5f,0.5f,0.5f , 1,0}
+		{ -0.5f,0.5f,0.5f , 1,0}
 	};
 
 	//Buffer* vbuffer = Graphics::Get().GetContext()->CreateVertexBuffer(sizeof(CommonVertex) * 4, &vertexArray);
@@ -64,11 +65,22 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	uint32_t VAO;
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
-	uint32_t VBO;
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexArray), vertexArray, GL_STATIC_DRAW);
 
+	OGVertexBuffer vb(sizeof(vertexArray));
+	vb.Create(vertexArray);
+
+	OGIndexBuffer ib(sizeof(indicesArray));
+	ib.Create(indicesArray);
+
+	OGUniformBlockBuffer ub(8);
+	Vector2 data{1,0};
+	ub.Create(&data);
+	glBindBuffer(GL_UNIFORM_BUFFER, ub.GetBuffer());
+	glUniformBlockBinding(((OGVertexShader*)fragment)->GetProgram(), 0, 1);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 1, ub.GetBuffer());
+
+
+	glBindBuffer(GL_ARRAY_BUFFER, vb.GetBuffer());
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
@@ -102,7 +114,8 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 		///////////////////////////////// RAW OPENGL  /////////////////////////////////////////
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		//glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 		//////////////////////////////////////////////////////////////////////////
 

@@ -2,6 +2,7 @@
 #include "..\Graphic\API\Shader.h"
 #include "GL\glew.h"
 #include "..\Utility\Path.h"
+#include "..\System\Graphics.h"
 
 namespace SE3D2
 {
@@ -192,6 +193,43 @@ namespace SE3D2
 	template<typename T>
 	bool OGShader<T>::CollectResources(const std::string& source)
 	{
+		// Clear previous buffer if there was any
+		mParametersBuffers.clear();
+
+		//GLint NumUniforms;
+		//GLint NumBlockUniforms;
+		//glGetProgramInterfaceiv(mProgram, GL_UNIFORM, GL_ACTIVE_RESOURCES, &NumUniforms);
+		//glGetProgramInterfaceiv(mProgram, GL_UNIFORM_BLOCK, GL_ACTIVE_RESOURCES, &NumBlockUniforms);
+
+		//GLenum PropertiesBlock[3] = { GL_NAME_LENGTH, GL_BUFFER_BINDING, GL_BUFFER_DATA_SIZE };
+		//for (int32_t i = 0; i < NumBlockUniforms; ++i)
+		//{
+		//	GLint ValuesBlock[3];
+		//	glGetProgramResourceiv(mProgram, GL_UNIFORM_BLOCK, i, 3, PropertiesBlock, 3, 0, ValuesBlock);
+		//	char* Name = (char*)alloca(ValuesBlock[0]);
+		//	glGetProgramResourceName(mProgram, GL_UNIFORM_BLOCK, i, ValuesBlock[0], &ValuesBlock[0], Name);
+		//	GLuint location = glGetUniformBlockIndex(mProgram, Name);
+
+		//	// Create parameters buffer and add to mParametersBuffer
+		//	ParametersBuffer* ParamBuffer = Graphics::Get().GetContext()->CreateParametersBuffer(Name, ValuesBlock[2], location);
+		//	if (!ParamBuffer)
+		//	{
+		//		return false;
+		//	}
+		//	std::unique_ptr<ParametersBuffer> UniqueBuffer(ParamBuffer);
+		//	mParametersBuffers.push_back(std::move(UniqueBuffer));
+		//}
+
+		//GLenum Properties[5] = { GL_BLOCK_INDEX, GL_TYPE, GL_OFFSET, GL_NAME_LENGTH, GL_LOCATION };
+		//for (int32_t i = 0; i < NumUniforms; ++i)
+		//{
+		//	GLint Values[5];
+		//	glGetProgramResourceiv(mProgram, GL_UNIFORM, i, 5, Properties, 5, 0, Values);
+		//	char* Name = (char*)alloca(Values[3]);
+		//	glGetProgramResourceName(mProgram, GL_UNIFORM, i, Values[3], &Values[3], Name);
+
+		//}
+
 		return true;
 	}
 
