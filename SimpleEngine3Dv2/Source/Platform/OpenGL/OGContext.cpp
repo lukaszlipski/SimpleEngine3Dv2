@@ -4,6 +4,7 @@
 #include "OGShader.h"
 #include "OGBuffer.h"
 #include "OGParamtersBuffer.h"
+#include "OGVertexFormat.h"
 
 namespace SE3D2
 {
@@ -102,17 +103,24 @@ namespace SE3D2
 
 	VertexFormat* OGContext::CreateVertexFormat(Shader* vertexShader, const VertexFormatDec& vertexFormatDesc)
 	{
-		return nullptr;
+		OGVertexFormat* vertexFormat = new OGVertexFormat(vertexFormatDesc);
+		vertexFormat->Create(vertexShader);
+
+		return vertexFormat;
 	}
 
 	Buffer* OGContext::CreateVertexBuffer(int32 size, void* data /*= nullptr*/)
 	{
-		return nullptr;
+		OGVertexBuffer* vb = new OGVertexBuffer(size);
+		vb->Create(data);
+		return vb;
 	}
 
 	Buffer* OGContext::CreateIndexBuffer(int32 size, void* data /*= nullptr*/)
 	{
-		return nullptr;
+		OGIndexBuffer* ib = new OGIndexBuffer(size);
+		ib->Create(data);
+		return ib;
 	}
 
 }

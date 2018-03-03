@@ -55,6 +55,7 @@ namespace SE3D2
 		glGenBuffers(1, &mBuffer);
 		glBindBuffer(mPolicy.GetTypeEnum(), mBuffer);
 		glBufferData(mPolicy.GetTypeEnum(), GetSize(), data, GL_STATIC_DRAW);
+		glBindBuffer(mPolicy.GetTypeEnum(), 0);
 		return true;
 	}
 

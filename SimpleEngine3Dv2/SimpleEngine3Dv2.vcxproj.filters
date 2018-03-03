@@ -128,5 +128,8 @@
     <ClInclude Include="Source\Platform\OpenGL\OGParamtersBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Platform\OpenGL\OGVertexFormat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

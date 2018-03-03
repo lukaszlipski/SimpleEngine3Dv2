@@ -184,6 +184,7 @@
     <ClInclude Include="Source\Platform\OpenGL\OGContext.h" />
     <ClInclude Include="Source\Platform\OpenGL\OGParamtersBuffer.h" />
     <ClInclude Include="Source\Platform\OpenGL\OGShader.h" />
+    <ClInclude Include="Source\Platform\OpenGL\OGVertexFormat.h" />
     <ClInclude Include="Source\System\File.h" />
     <ClInclude Include="Source\Utility\DateTime.h" />
     <ClInclude Include="Source\Utility\Path.h" />
