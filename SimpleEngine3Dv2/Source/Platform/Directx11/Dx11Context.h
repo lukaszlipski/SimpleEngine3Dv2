@@ -17,6 +17,7 @@ namespace SE3D2
 		virtual VertexFormat* CreateVertexFormat(Shader* vertexShader, const VertexFormatDec& vertexFormatDesc) override;
 		virtual Buffer* CreateVertexBuffer(int32 size, void* data = nullptr) override;
 		virtual Buffer* CreateIndexBuffer(int32 size, void* data = nullptr) override;
+		virtual ShaderPipeline* CreateShaderPipeline(std::initializer_list<Shader *> stages) override;
 
 		inline struct ID3D11Device* GetDevice() const { return mD3D11Device; }
 		inline struct ID3D11DeviceContext* GetImmediateContext() const { return mD3D11DeviceCtx; }

@@ -28,7 +28,6 @@ namespace SE3D2
 		}
 
 		virtual bool Compile(const std::string& name) = 0;
-		virtual void Bind() = 0;
 		virtual void SetParametersBuffer(ParametersBuffer* pb, uint32 globalSlot = 0) = 0;
 		virtual std::string GetExtension() const = 0;
 		std::string GetCompiledExtension() const { return "cs"; }

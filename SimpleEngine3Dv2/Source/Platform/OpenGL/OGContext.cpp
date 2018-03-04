@@ -5,6 +5,7 @@
 #include "OGBuffer.h"
 #include "OGParamtersBuffer.h"
 #include "OGVertexFormat.h"
+#include "OGShaderPipeline.h"
 
 namespace SE3D2
 {
@@ -121,6 +122,11 @@ namespace SE3D2
 		OGIndexBuffer* ib = new OGIndexBuffer(size);
 		ib->Create(data);
 		return ib;
+	}
+
+	ShaderPipeline* OGContext::CreateShaderPipeline(std::initializer_list<Shader *> stages)
+	{
+		return new OGShaderPipeline(stages);
 	}
 
 }

@@ -12,6 +12,9 @@
 #include "GL/glew.h"
 #include "Platform/OpenGL/OGShader.h"
 #include "Platform/OpenGL/OGBuffer.h"
+#include "Graphic/API/ShaderPipeline.h"
+#include "Platform/OpenGL/OGShaderPipeline.h"
+#include "Platform/DirectX11/Dx11ShaderPipeline.h"
 
 using namespace SE3D2;
 
@@ -25,8 +28,8 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	Shader* vertex = ShaderManager::Get().GetShader<ShaderType::VERTEX>("VertexShaderTest");
 	Shader* fragment = ShaderManager::Get().GetShader<ShaderType::FRAGMET>("PixelShaderTest");
 
-	//vertex->Bind();
-	//fragment->Bind();
+	ShaderPipeline* shaderPip = Graphics::Get().GetContext()->CreateShaderPipeline({ vertex, fragment });
+	shaderPip->Bind();
 
 	ParametersBuffer* pb = vertex->FindParametersBuffer("PerObject");
 	pb->SetFloat("Float", 0.2f);
@@ -59,22 +62,15 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	Buffer* ibuffer = Graphics::Get().GetContext()->CreateIndexBuffer(sizeof(uint32_t) * 6, &indicesArray);
 
 	///////////////////////////////// RAW OPENGL  /////////////////////////////////////////
-
-	uint32 pipe;
-	glGenProgramPipelines(1, &pipe);
-	glUseProgramStages(pipe, GL_VERTEX_SHADER_BIT, static_cast<OGVertexShader*>(vertex)->GetProgram());
-	glUseProgramStages(pipe, GL_FRAGMENT_SHADER_BIT, static_cast<OGFragmentShader*>(fragment)->GetProgram());
-
-	glBindProgramPipeline(pipe);
-
+	
 	uint32_t VAO;
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
-
+	
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ((OGIndexBuffer*)ibuffer)->GetBuffer());
-
+	
 	glBindVertexBuffer(0, ((OGVertexBuffer*)vbuffer)->GetBuffer(), 0, CommonVertex::VertexFormatInfo.Size);
-
+	
 	glBindVertexArray(0);
 
 
@@ -82,7 +78,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	///////////////////////////////// RAW DIRECTX /////////////////////////////////////////
 
-	// Set Vertex buffer
+	//// Set Vertex buffer
 	//ID3D11Buffer *vertexBuffer = static_cast<Dx11VertexBuffer*>(vbuffer)->GetBuffer();
 	//UINT stride = sizeof(CommonVertex);
 	//UINT offset = 0;
@@ -106,6 +102,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		//////////////////////////////////////////////////////////////////////////
 
 		///////////////////////////////// RAW OPENGL  /////////////////////////////////////////
+		
 		glBindVertexArray(VAO);
 		
 		vf->Bind();

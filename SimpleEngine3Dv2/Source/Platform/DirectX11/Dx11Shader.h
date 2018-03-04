@@ -16,6 +16,7 @@ namespace SE3D2
 		void Bind();
 		void SetConstantBuffer(Dx11ParametersBuffer* pb);
 		ID3D11PixelShader* GetShader() const { return mShader; }
+		inline ShaderType GetType() { return ShaderType::FRAGMET; }
 	private:
 		ID3D11PixelShader* mShader;
 	};
@@ -27,6 +28,7 @@ namespace SE3D2
 		void Bind();
 		void SetConstantBuffer(Dx11ParametersBuffer* pb);
 		ID3D11VertexShader* GetShader() const { return mShader; }
+		inline ShaderType GetType() { return ShaderType::VERTEX; }
 	private:
 		ID3D11VertexShader* mShader;
 	};
@@ -38,7 +40,9 @@ namespace SE3D2
 	public:
 		Dx11Shader(const std::string& name)
 			: Shader(name)
-		{ }
+		{ 
+			mType = mShaderPolicy.GetType();
+		}
 
 		~Dx11Shader()
 		{
@@ -46,9 +50,10 @@ namespace SE3D2
 		}
 
 		virtual bool Compile(const std::string& name) override;
-		virtual void Bind() override { mShaderPolicy.Bind(); }
 		virtual std::string GetExtension() const override { return "hlsl"; }
 		virtual void SetParametersBuffer(ParametersBuffer* pb, uint32 globalSlot = 0) override;
+
+		inline void Bind() { mShaderPolicy.Bind(); }
 
 	protected:
 		virtual bool CollectResources(const std::string& source) override;
@@ -200,6 +205,9 @@ namespace SE3D2
 
 		mParametersBuffers.push_back(std::move(Buffer));
 	}
+
+	using Dx11VertexShader = Dx11Shader<Dx11VertexShaderPolicy>;
+	using Dx11PixelShader = Dx11Shader<Dx11PixelShaderPolicy>;
 
 }
 

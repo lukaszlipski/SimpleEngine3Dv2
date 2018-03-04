@@ -5,6 +5,7 @@
 #include "Dx11Shader.h"
 #include "Dx11VertexFormat.h"
 #include "Dx11Buffer.h"
+#include "Dx11ShaderPipeline.h"
 
 namespace SE3D2
 {
@@ -179,6 +180,11 @@ namespace SE3D2
 			buffer->Create(data);
 		}
 		return buffer;
+	}
+
+	ShaderPipeline* Dx11Context::CreateShaderPipeline(std::initializer_list<Shader *> stages)
+	{
+		return new Dx11ShaderPipeline(stages);
 	}
 
 }

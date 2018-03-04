@@ -12,12 +12,14 @@ namespace SE3D2
 	{
 	public:
 		inline uint32 CreateShader() { return glCreateShader(GL_FRAGMENT_SHADER); }
+		inline ShaderType GetType() { return ShaderType::FRAGMET; }
 	};
 
 	class OGVertexShaderPolicy
 	{
 	public:
 		inline uint32 CreateShader() { return glCreateShader(GL_VERTEX_SHADER); }
+		inline ShaderType GetType() { return ShaderType::VERTEX; }
 	};
 
 	template<typename T>
@@ -27,7 +29,9 @@ namespace SE3D2
 	public:
 		OGShader(const std::string& name)
 			: Shader(name)
-		{ }
+		{ 
+			mType = mShaderPolicy.GetType();
+		}
 
 		~OGShader()
 		{
@@ -35,7 +39,6 @@ namespace SE3D2
 		}
 
 		virtual bool Compile(const std::string& name) override;
-		virtual void Bind() override;
 		virtual void SetParametersBuffer(ParametersBuffer* pb, uint32 globalSlot = 0) override;
 		virtual std::string GetExtension() const override { return "glsl"; }
 
@@ -298,12 +301,6 @@ namespace SE3D2
 				glBindBuffer(GL_UNIFORM_BUFFER, 0);
 			}
 		}
-	}
-
-	template<typename T>
-	void OGShader<T>::Bind()
-	{
-		glUseProgram(mProgram);
 	}
 
 	using OGVertexShader = OGShader<OGVertexShaderPolicy>;

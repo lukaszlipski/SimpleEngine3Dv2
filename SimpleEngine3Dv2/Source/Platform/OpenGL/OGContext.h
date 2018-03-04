@@ -17,6 +17,7 @@ namespace SE3D2
 		virtual VertexFormat* CreateVertexFormat(Shader* vertexShader, const VertexFormatDec& vertexFormatDesc) override;
 		virtual Buffer* CreateVertexBuffer(int32 size, void* data = nullptr) override;
 		virtual Buffer* CreateIndexBuffer(int32 size, void* data = nullptr) override;
+		virtual ShaderPipeline* CreateShaderPipeline(std::initializer_list<Shader *> stages) override;
 
 	private:
 		void* mOpenGLContext;

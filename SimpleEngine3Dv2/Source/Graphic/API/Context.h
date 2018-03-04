@@ -1,8 +1,9 @@
 #pragma once
 #include "../../Utility/Types.h"
-#include "Shader.h"
 #include <string>
+#include "Shader.h"
 #include "VertexFormat.h"
+#include "ShaderPipeline.h"
 #include "Buffer.h"
 
 namespace SE3D2
@@ -34,6 +35,7 @@ namespace SE3D2
 		virtual VertexFormat* CreateVertexFormat(Shader* vertexShader, const VertexFormatDec& vertexFormatDesc) = 0;
 		virtual Buffer* CreateVertexBuffer(int32 size, void* data = nullptr) = 0;
 		virtual Buffer* CreateIndexBuffer(int32 size, void* data = nullptr) = 0;
+		virtual ShaderPipeline* CreateShaderPipeline(std::initializer_list<Shader*> stages) = 0;
 
 	protected:
 		inline Context* SetAPI(GraphicsAPI api) 
