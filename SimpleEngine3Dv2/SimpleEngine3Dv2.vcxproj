@@ -160,6 +160,7 @@
     <ClCompile Include="Source\Platform\Directx11\Dx11Context.cpp" />
     <ClCompile Include="Source\Platform\Directx11\Dx11Shader.cpp" />
     <ClCompile Include="Source\Platform\DirectX11\Dx11VertexFormat.cpp" />
+    <ClCompile Include="Source\Platform\OpenGL\OGBuffer.cpp" />
     <ClCompile Include="Source\Platform\OpenGL\OGContext.cpp" />
     <ClCompile Include="Source\System\File.cpp" />
     <ClCompile Include="Source\System\Graphics.cpp" />

@@ -20,7 +20,7 @@ namespace SE3D2
 		{
 			if (mDirty)
 			{
-				mBuffer->Update(mData.get());
+				mBuffer->Update(mBuffer->GetSize(), 0, mData.get());
 				SetDirty(false);
 			}
 		}

@@ -8,100 +8,63 @@
 namespace SE3D2
 {
 
-	class Dx11VertexBufferPolicy
+	class Dx11Buffer
 	{
 	public:
-		D3D11_BUFFER_DESC GetBufferDesc(int32 size);
-		inline BufferType GetType() const { return BufferType::Vertex; }
-	};
+		ID3D11Buffer* GetBuffer() const { return mBuffer; }
 
-	class Dx11IndexBufferPolicy
-	{
-	public:
-		D3D11_BUFFER_DESC GetBufferDesc(int32 size);
-		inline BufferType GetType() const { return BufferType::Index; }
-	};
+	protected:
+		bool CreateBuffer(int32 size, void* data);
+		bool UpdateBuffer(int32 size, int32 offset, void* data);
+		void DeleteBuffer();
 
-	class Dx11ConstantBufferPolicy
-	{
-	public:
-		D3D11_BUFFER_DESC GetBufferDesc(int32 size);
-		inline BufferType GetType() const { return BufferType::Constant; }
-	};
+		virtual D3D11_BUFFER_DESC GetBufferDesc() = 0;
 
-	template<typename T>
-	class Dx11Buffer : public Buffer
-	{
-
-	public:
-		Dx11Buffer(int32 size)
-			: Buffer(size)
-		{ }
-
-		virtual bool Create(void* data = nullptr) override;
-
-		virtual bool Update(void* data) override;
-
-		virtual void ClearResource() override;
-		inline ID3D11Buffer* GetBuffer() const { return mBuffer; }
-
-	private:
-		T mPolicy;
 		ID3D11Buffer* mBuffer;
 
 	};
 
-	template<typename T>
-	bool Dx11Buffer<T>::Create(void* data /*= nullptr*/)
+	class Dx11VertexBuffer : public VertexBuffer, public Dx11Buffer
 	{
+	public:
+		virtual BufferType GetType() const override { return BufferType::Vertex; };
 
-		// Set type for buffer based on policy
-		mType = mPolicy.GetType();
+		virtual bool Create(int32 size, void* data = nullptr) override;;
+		virtual bool Update(int32 size, int32 offset, void* data) override;;
+		virtual void ClearResource() override { DeleteBuffer(); };
 
-		D3D11_BUFFER_DESC BufferDesc = mPolicy.GetBufferDesc(GetSize());
+	protected:
+		virtual D3D11_BUFFER_DESC GetBufferDesc() override;
 
-		D3D11_SUBRESOURCE_DATA* BufferData = nullptr;
+	};
 
-		// If data is not present, create empty buffer
-		if (data)
-		{
-			D3D11_SUBRESOURCE_DATA ResourceData = {};
-			ResourceData.pSysMem = data;
-			BufferData = &ResourceData;
-		}
-
-		if (static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetDevice()->CreateBuffer(&BufferDesc, BufferData, &mBuffer) != S_OK)
-		{
-			return false;
-		}
-
-		return true;
-	}
-
-	template<typename T>
-	bool Dx11Buffer<T>::Update(void* data)
+	class Dx11IndexBuffer : public IndexBuffer, public Dx11Buffer
 	{
+	public:
+		virtual BufferType GetType() const override { return BufferType::Index; };
 
-		if (data)
-		{
-			Dx11Context* dic = static_cast<Dx11Context*>(Graphics::Get().GetContext());
-			dic->GetImmediateContext()->UpdateSubresource(mBuffer, 0, 0, data, 0, 0);
+		virtual bool Create(int32 size, void* data = nullptr) override;;
+		virtual bool Update(int32 size, int32 offset, void* data) override;;
+		virtual void ClearResource() override { DeleteBuffer(); };
 
-			// #TODO: check for operation result
-		}
+	protected:
+		virtual D3D11_BUFFER_DESC GetBufferDesc() override;
 
-		return true;
-	}
+	};
 
-	template<typename T>
-	void Dx11Buffer<T>::ClearResource()
+	class Dx11ConstantBuffer : public ConstantBuffer, public Dx11Buffer
 	{
-		mBuffer->Release();
-	}
+	public:
+		virtual BufferType GetType() const override { return BufferType::Constant; };
 
+		virtual bool Create(int32 size, void* data = nullptr) override;;
+		virtual bool Update(int32 size, int32 offset, void* data) override;;
+		virtual void ClearResource() override { DeleteBuffer(); };
 
-	using Dx11VertexBuffer = Dx11Buffer<Dx11VertexBufferPolicy>;
-	using Dx11IndexBuffer = Dx11Buffer<Dx11IndexBufferPolicy>;
-	using Dx11ConstantBuffer = Dx11Buffer<Dx11ConstantBufferPolicy>;
+	protected:
+		virtual D3D11_BUFFER_DESC GetBufferDesc() override;
+
+	};
+
 
 }

@@ -51,6 +51,9 @@
     <ClCompile Include="Source\Platform\DirectX11\Dx11Buffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Platform\OpenGL\OGBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\System\Window.h">

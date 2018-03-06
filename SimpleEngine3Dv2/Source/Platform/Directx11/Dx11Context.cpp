@@ -142,8 +142,8 @@ namespace SE3D2
 	ParametersBuffer* Dx11Context::CreateParametersBuffer(const std::string& name, int32 size, int32 slot)
 	{
 
-		Dx11ConstantBuffer* ConstantBuffer = new Dx11ConstantBuffer(size);
-		if (ConstantBuffer->Create() != true)
+		Dx11ConstantBuffer* ConstantBuffer = new Dx11ConstantBuffer();
+		if (ConstantBuffer->Create(size) != true)
 		{
 			return nullptr;
 		}
@@ -162,22 +162,22 @@ namespace SE3D2
 		return vertexFormat;
 	}
 
-	Buffer* Dx11Context::CreateVertexBuffer(int32 size, void* data /*= nullptr*/)
+	VertexBuffer* Dx11Context::CreateVertexBuffer(int32 size, void* data /*= nullptr*/)
 	{
-		Buffer* buffer = new Dx11Buffer<Dx11VertexBufferPolicy>(size);
-		if (data)
+		VertexBuffer* buffer = new Dx11VertexBuffer();
+		if (data && size)
 		{
-			buffer->Create(data);
+			buffer->Create(size, data);
 		}
 		return buffer;
 	}
 
-	Buffer* Dx11Context::CreateIndexBuffer(int32 size, void* data /*= nullptr*/)
+	IndexBuffer* Dx11Context::CreateIndexBuffer(int32 size, void* data /*= nullptr*/)
 	{
-		Buffer* buffer = new Dx11Buffer<Dx11IndexBufferPolicy>(size);
+		IndexBuffer* buffer = new Dx11IndexBuffer();
 		if (data)
 		{
-			buffer->Create(data);
+			buffer->Create(size, data);
 		}
 		return buffer;
 	}

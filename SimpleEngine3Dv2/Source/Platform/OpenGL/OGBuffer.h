@@ -5,82 +5,61 @@
 namespace SE3D2
 {
 
-	class OGVertexBufferPolicy
+	class OGBuffer
 	{
 	public:
-		inline int32 GetTypeEnum() const { return GL_ARRAY_BUFFER; }
-		inline BufferType GetType() const { return BufferType::Vertex; }
-	};
-
-	class OGIndexBufferPolicy
-	{
-	public:
-		inline int32 GetTypeEnum() const { return GL_ELEMENT_ARRAY_BUFFER; }
-		inline BufferType GetType() const { return BufferType::Index; }
-	};
-
-	class OGUniformBlockPolicy
-	{
-	public:
-		inline int32 GetTypeEnum() const { return GL_UNIFORM_BUFFER; }
-		inline BufferType GetType() const { return BufferType::Constant; }
-	};
-
-	template<typename T>
-	class OGBuffer : public Buffer
-	{
-	public:
-
-		OGBuffer(int32 size)
-			: Buffer(size)
-		{ }
-
-		virtual bool Create(void* data = nullptr) override;
-		virtual bool Update(void* data) override;
-		virtual void ClearResource() override;
-
 		inline uint32 GetBuffer() const { return mBuffer; }
 
-	private:
-		T mPolicy;
+	protected:
+		bool CreateBuffer(int32 size, void* data);
+		bool UpdateBuffer(int32 size, int32 offset, void* data);
+		void DeleteBuffer();
+
 		uint32 mBuffer;
+
+		virtual uint32 GetBufferType() const = 0;
+	};
+
+	class OGVertexBuffer : public VertexBuffer, public OGBuffer
+	{
+
+	public:
+		virtual bool Create(int32 size, void* data = nullptr) override;
+		virtual bool Update(int32 size, int32 offset, void* data) override;;
+		virtual void ClearResource() override { DeleteBuffer(); }
+		virtual BufferType GetType() const override { return BufferType::Vertex; };
+
+	protected:
+		virtual uint32 GetBufferType() const override { return GL_ARRAY_BUFFER; }
 
 	};
 
-	template<typename T>
-	bool OGBuffer<T>::Create(void* data /*= nullptr*/)
+	class OGIndexBuffer : public IndexBuffer, public OGBuffer
 	{
-		mType = mPolicy.GetType();
 
-		glGenBuffers(1, &mBuffer);
-		glBindBuffer(mPolicy.GetTypeEnum(), mBuffer);
-		glBufferData(mPolicy.GetTypeEnum(), GetSize(), data, GL_STATIC_DRAW);
-		glBindBuffer(mPolicy.GetTypeEnum(), 0);
-		return true;
-	}
+	public:
+		virtual bool Create(int32 size, void* data = nullptr) override;
+		virtual bool Update(int32 size, int32 offset, void* data) override;;
+		virtual void ClearResource() override { DeleteBuffer(); }
+		virtual BufferType GetType() const override { return BufferType::Index; };
 
-	template<typename T>
-	bool OGBuffer<T>::Update(void* data)
+	protected:
+		virtual uint32 GetBufferType() const override { return GL_ELEMENT_ARRAY_BUFFER; }
+
+	};
+
+	class OGUniformBlockBuffer : public ConstantBuffer, public OGBuffer
 	{
-		if (data)
-		{
-			glBindBuffer(mPolicy.GetTypeEnum(), mBuffer);
-			glBufferSubData(mPolicy.GetTypeEnum(), 0, GetSize(), data);
-			glBindBuffer(mPolicy.GetTypeEnum(), 0);
 
-			// #TODO: check for operation result
-		}
+	public:
+		virtual bool Create(int32 size, void* data = nullptr) override;
+		virtual bool Update(int32 size, int32 offset, void* data) override;;
+		virtual void ClearResource() override { DeleteBuffer(); }
+		virtual BufferType GetType() const override { return BufferType::Constant; };
 
-		return true;
-	}
+	protected:
+		virtual uint32 GetBufferType() const override { return GL_UNIFORM_BUFFER; }
 
-	template<typename T>
-	void OGBuffer<T>::ClearResource()
-	{
-		glDeleteBuffers(1, &mBuffer);
-	}
+	};
 
-	using OGVertexBuffer = OGBuffer<OGVertexBufferPolicy>;
-	using OGIndexBuffer = OGBuffer<OGIndexBufferPolicy>;
-	using OGUniformBlockBuffer = OGBuffer<OGUniformBlockPolicy>;
 }

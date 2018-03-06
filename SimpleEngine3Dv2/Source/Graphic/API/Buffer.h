@@ -13,22 +13,38 @@ namespace SE3D2
 	class Buffer
 	{
 	public:
-		Buffer(int32 size)
-			: mSize(size)
-		{ }
-
 		virtual ~Buffer() = default;
 
-		virtual bool Create(void* data = nullptr) = 0;
-		virtual bool Update(void* data) = 0;
+		virtual bool Create(int32 size, void* data = nullptr) = 0;
+		virtual bool Update(int32 size, int32 offset, void* data) = 0;
 		virtual void ClearResource() = 0;
+		virtual BufferType GetType() const = 0;
 
-		inline BufferType GetType() const { return mType; }
 		inline int32 GetSize() const { return mSize; }
 
 	protected:
 		int32 mSize;
-		BufferType mType;
+	};
+
+	class VertexBuffer : public Buffer
+	{
+	public:
+		virtual ~VertexBuffer() = default;
 
 	};
+
+	class IndexBuffer : public Buffer
+	{
+	public:
+		virtual ~IndexBuffer() = default;
+
+	};
+
+	class ConstantBuffer : public Buffer
+	{
+	public:
+		virtual ~ConstantBuffer() = default;
+
+	};
+
 }

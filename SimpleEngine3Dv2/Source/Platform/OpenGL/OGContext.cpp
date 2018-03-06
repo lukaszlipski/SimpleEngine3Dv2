@@ -93,8 +93,8 @@ namespace SE3D2
 
 	ParametersBuffer* OGContext::CreateParametersBuffer(const std::string& name, int32 size, int32 slot)
 	{
-		OGUniformBlockBuffer* ConstantBuffer = new OGUniformBlockBuffer(size);
-		if (ConstantBuffer->Create() != true)
+		OGUniformBlockBuffer* ConstantBuffer = new OGUniformBlockBuffer();
+		if (ConstantBuffer->Create(size) != true)
 		{
 			return nullptr;
 		}
@@ -112,15 +112,15 @@ namespace SE3D2
 
 	Buffer* OGContext::CreateVertexBuffer(int32 size, void* data /*= nullptr*/)
 	{
-		OGVertexBuffer* vb = new OGVertexBuffer(size);
-		vb->Create(data);
+		OGVertexBuffer* vb = new OGVertexBuffer();
+		vb->Create(size, data);
 		return vb;
 	}
 
 	Buffer* OGContext::CreateIndexBuffer(int32 size, void* data /*= nullptr*/)
 	{
-		OGIndexBuffer* ib = new OGIndexBuffer(size);
-		ib->Create(data);
+		OGIndexBuffer* ib = new OGIndexBuffer();
+		ib->Create(size, data);
 		return ib;
 	}
 
