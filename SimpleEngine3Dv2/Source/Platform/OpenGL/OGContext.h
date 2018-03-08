@@ -15,8 +15,8 @@ namespace SE3D2
 		virtual std::string GetName() override { return "OpenGL"; }
 		virtual ParametersBuffer* CreateParametersBuffer(const std::string& name, int32 size, int32 slot) override;
 		virtual VertexFormat* CreateVertexFormat(Shader* vertexShader, const VertexFormatDec& vertexFormatDesc) override;
-		virtual Buffer* CreateVertexBuffer(int32 size, void* data = nullptr) override;
-		virtual Buffer* CreateIndexBuffer(int32 size, void* data = nullptr) override;
+		virtual VertexBuffer* CreateVertexBuffer(int32 size, void* data = nullptr) override;
+		virtual IndexBuffer* CreateIndexBuffer(int32 size, void* data = nullptr) override;
 		virtual ShaderPipeline* CreateShaderPipeline(std::initializer_list<Shader *> stages) override;
 
 	private:

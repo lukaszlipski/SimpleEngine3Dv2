@@ -1,5 +1,6 @@
 #pragma once
 #include "..\Utility\Types.h"
+#include <assert.h>
 
 namespace SE3D2
 {
@@ -31,12 +32,48 @@ namespace SE3D2
 	public:
 		virtual ~VertexBuffer() = default;
 
+		virtual void Bind(uint32 stride, uint32 offset = 0) = 0;
+
+	};
+
+	enum class IndexType
+	{
+		UINT32,
+		UINT16
 	};
 
 	class IndexBuffer : public Buffer
 	{
 	public:
 		virtual ~IndexBuffer() = default;
+
+		virtual void Bind() = 0;
+
+		inline void SetType(IndexType type) { mType = type; }
+
+		inline int32 GetIndicesNum()
+		{
+			switch (mType)
+			{
+			case IndexType::UINT32:
+			{
+				return GetSize() / sizeof(uint32);
+			}
+			case IndexType::UINT16:
+			{
+				return GetSize() / sizeof(uint16);
+			}
+			default:
+			{
+				// #TODO: unsupported type
+				assert(false);
+				return -1;
+			}
+			}
+		}
+
+	protected:
+		IndexType mType = IndexType::UINT32;
 
 	};
 

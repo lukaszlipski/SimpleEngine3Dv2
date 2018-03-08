@@ -33,6 +33,8 @@ namespace SE3D2
 		virtual bool Update(int32 size, int32 offset, void* data) override;;
 		virtual void ClearResource() override { DeleteBuffer(); };
 
+		virtual void Bind(uint32 stride, uint32 offset = 0) override;
+
 	protected:
 		virtual D3D11_BUFFER_DESC GetBufferDesc() override;
 
@@ -46,6 +48,8 @@ namespace SE3D2
 		virtual bool Create(int32 size, void* data = nullptr) override;;
 		virtual bool Update(int32 size, int32 offset, void* data) override;;
 		virtual void ClearResource() override { DeleteBuffer(); };
+
+		virtual void Bind() override;
 
 	protected:
 		virtual D3D11_BUFFER_DESC GetBufferDesc() override;

@@ -57,6 +57,13 @@ namespace SE3D2
 		return UpdateBuffer(size, offset, data);
 	}
 
+	void Dx11VertexBuffer::Bind(uint32 stride, uint32 offset /*= 0*/)
+	{
+		UINT Stride = stride;
+		UINT Offset = offset;
+		static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->IASetVertexBuffers(0, 1, &mBuffer, &Stride, &Offset);
+	}
+
 	D3D11_BUFFER_DESC Dx11VertexBuffer::GetBufferDesc()
 	{
 		D3D11_BUFFER_DESC BufferDesc = {};
@@ -87,6 +94,30 @@ namespace SE3D2
 	bool Dx11IndexBuffer::Update(int32 size, int32 offset, void* data)
 	{
 		return UpdateBuffer(size, offset, data);
+	}
+
+	void Dx11IndexBuffer::Bind()
+	{
+		DXGI_FORMAT Format;
+		switch (mType)
+		{
+		case IndexType::UINT32:
+		{
+			Format = DXGI_FORMAT_R32_UINT;
+			break;
+		}
+		case IndexType::UINT16:
+		{
+			Format = DXGI_FORMAT_R16_UINT;
+			break;
+		}
+		default:
+		{
+			// #TODO: unsupported format
+			assert(false);
+		}
+		}
+		static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->IASetIndexBuffer(mBuffer, Format, 0);
 	}
 
 	D3D11_BUFFER_DESC Dx11ConstantBuffer::GetBufferDesc()

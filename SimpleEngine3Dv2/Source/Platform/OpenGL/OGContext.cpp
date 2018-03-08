@@ -110,14 +110,14 @@ namespace SE3D2
 		return vertexFormat;
 	}
 
-	Buffer* OGContext::CreateVertexBuffer(int32 size, void* data /*= nullptr*/)
+	VertexBuffer* OGContext::CreateVertexBuffer(int32 size, void* data /*= nullptr*/)
 	{
 		OGVertexBuffer* vb = new OGVertexBuffer();
 		vb->Create(size, data);
 		return vb;
 	}
 
-	Buffer* OGContext::CreateIndexBuffer(int32 size, void* data /*= nullptr*/)
+	IndexBuffer* OGContext::CreateIndexBuffer(int32 size, void* data /*= nullptr*/)
 	{
 		OGIndexBuffer* ib = new OGIndexBuffer();
 		ib->Create(size, data);
