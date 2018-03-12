@@ -75,7 +75,7 @@ namespace SE3D2
 			NewShader = new OGShader<OGVertexShaderPolicy>(name);
 			break;
 		}
-		case ShaderType::FRAGMET:
+		case ShaderType::PIXEL:
 		{
 			NewShader = new OGShader<OGFragmentShaderPolicy>(name);
 			break;
@@ -127,6 +127,13 @@ namespace SE3D2
 	ShaderPipeline* OGContext::CreateShaderPipeline(std::initializer_list<Shader *> stages)
 	{
 		return new OGShaderPipeline(stages);
+	}
+
+	StructuredBuffer* OGContext::CreateStructuredBuffer(int32 stride, int32 size, void* data /*= nullptr*/)
+	{
+		OGStructuredBuffer* ib = new OGStructuredBuffer();
+		ib->Create(size, data);
+		return ib;
 	}
 
 }

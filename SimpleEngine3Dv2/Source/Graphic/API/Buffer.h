@@ -6,9 +6,10 @@ namespace SE3D2
 {
 	enum class BufferType
 	{
-		Vertex = 0,
-		Index,
-		Constant
+		VERTEX = 0,
+		INDEX,
+		CONSTANT,
+		STRUCTURED
 	};
 
 	class Buffer
@@ -22,9 +23,14 @@ namespace SE3D2
 		virtual BufferType GetType() const = 0;
 
 		inline int32 GetSize() const { return mSize; }
+		inline bool IsValid() const { return mIsValid; }
 
 	protected:
+		inline void SetInvalid() { mIsValid = false; }
+		inline void SetValid() { mIsValid = true; }
+
 		int32 mSize;
+		bool mIsValid = false;
 	};
 
 	class VertexBuffer : public Buffer
@@ -81,6 +87,13 @@ namespace SE3D2
 	{
 	public:
 		virtual ~ConstantBuffer() = default;
+
+	};
+
+	class StructuredBuffer : public Buffer
+	{
+	public:
+		virtual ~StructuredBuffer() = default;
 
 	};
 

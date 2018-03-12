@@ -123,9 +123,14 @@ namespace SE3D2
 			NewShader = new Dx11Shader<Dx11VertexShaderPolicy>(name);
 			break;
 		}
-		case ShaderType::FRAGMET:
+		case ShaderType::PIXEL:
 		{
 			NewShader = new Dx11Shader<Dx11PixelShaderPolicy>(name);
+			break;
+		}
+		case ShaderType::COMPUTE:
+		{
+			NewShader = new Dx11Shader<Dx11ComputeShaderPolicy>(name);
 			break;
 		}
 		}
@@ -185,6 +190,15 @@ namespace SE3D2
 	ShaderPipeline* Dx11Context::CreateShaderPipeline(std::initializer_list<Shader *> stages)
 	{
 		return new Dx11ShaderPipeline(stages);
+	}
+
+	StructuredBuffer* Dx11Context::CreateStructuredBuffer(int32 stride, int32 size, void* data /*= nullptr*/)
+	{
+		StructuredBuffer* buffer = new Dx11StructuredBuffer(stride);
+		
+		buffer->Create(size, data);
+		
+		return buffer;
 	}
 
 }

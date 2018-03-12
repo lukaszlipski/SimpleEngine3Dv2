@@ -48,8 +48,12 @@ namespace SE3D2
 	bool Dx11VertexBuffer::Create(int32 size, void* data /*= nullptr*/)
 	{
 		mSize = size;
-
-		return CreateBuffer(size, data);
+		if (!CreateBuffer(size, data))
+		{
+			return false;
+		}
+		SetValid();
+		return true;
 	}
 
 	bool Dx11VertexBuffer::Update(int32 size, int32 offset, void* data)
@@ -87,8 +91,12 @@ namespace SE3D2
 	bool Dx11IndexBuffer::Create(int32 size, void* data /*= nullptr*/)
 	{
 		mSize = size;
-
-		return CreateBuffer(size, data);
+		if (!CreateBuffer(size, data))
+		{
+			return false;
+		}
+		SetValid();
+		return true;
 	}
 
 	bool Dx11IndexBuffer::Update(int32 size, int32 offset, void* data)
@@ -133,13 +141,79 @@ namespace SE3D2
 	bool Dx11ConstantBuffer::Create(int32 size, void* data /*= nullptr*/)
 	{
 		mSize = size;
-
-		return CreateBuffer(size, data);
+		if (!CreateBuffer(size, data))
+		{
+			return false;
+		}
+		SetValid();
+		return true;
 	}
 
 	bool Dx11ConstantBuffer::Update(int32 size, int32 offset, void* data)
 	{
 		return UpdateBuffer(size, offset, data);
+	}
+
+	bool Dx11StructuredBuffer::Create(int32 size, void* data /*= nullptr*/)
+	{
+		mSize = size;
+
+		if (mSize % mStride != 0)
+		{
+			// #TODO : Log - Size of the buffer is not divisible by given stride
+			assert(false);
+		}
+
+		// Create buffer
+		if (!CreateBuffer(size, data))
+		{
+			return false;
+		}
+
+		// Create unordered view for that buffer
+		D3D11_UNORDERED_ACCESS_VIEW_DESC Uavd = {};
+		Uavd.Buffer.NumElements = mSize / mStride;
+		Uavd.Format = DXGI_FORMAT_UNKNOWN;
+		Uavd.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
+
+		if (static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetDevice()->CreateUnorderedAccessView(mBuffer, &Uavd, &mUView) != S_OK)
+		{
+			ClearResource();
+			return false;
+		}
+
+		// Create view for that buffer
+		D3D11_SHADER_RESOURCE_VIEW_DESC Shvd = {};
+		Shvd.Format = DXGI_FORMAT_UNKNOWN;
+		Shvd.Buffer.NumElements = mSize / mStride;
+		Shvd.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+		
+		if (static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetDevice()->CreateShaderResourceView(mBuffer, &Shvd, &mView) != S_OK)
+		{
+			ClearResource();
+			return false;
+		}
+
+		SetValid();
+
+		return true;
+	}
+
+	bool Dx11StructuredBuffer::Update(int32 size, int32 offset, void* data)
+	{
+		return UpdateBuffer(size, offset, data);
+	}
+
+	D3D11_BUFFER_DESC Dx11StructuredBuffer::GetBufferDesc()
+	{
+		D3D11_BUFFER_DESC BufferDesc = {};
+		BufferDesc.Usage = D3D11_USAGE_DEFAULT;
+		BufferDesc.ByteWidth = mSize;
+		BufferDesc.StructureByteStride = mStride;
+		BufferDesc.BindFlags = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
+		BufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+
+		return BufferDesc;
 	}
 
 }

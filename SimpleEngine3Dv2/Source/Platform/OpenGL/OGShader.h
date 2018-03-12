@@ -5,6 +5,7 @@
 #include "..\System\Graphics.h"
 #include <assert.h>
 #include "OGParamtersBuffer.h"
+#include "..\Graphic\API\Buffer.h"
 
 namespace SE3D2
 {
@@ -12,7 +13,7 @@ namespace SE3D2
 	{
 	public:
 		inline uint32 CreateShader() { return glCreateShader(GL_FRAGMENT_SHADER); }
-		inline ShaderType GetType() { return ShaderType::FRAGMET; }
+		inline ShaderType GetType() { return ShaderType::PIXEL; }
 	};
 
 	class OGVertexShaderPolicy
@@ -40,6 +41,7 @@ namespace SE3D2
 
 		virtual bool Compile(const std::string& name) override;
 		virtual void SetParametersBuffer(ParametersBuffer* pb, uint32 globalSlot = 0) override;
+		virtual bool SetStructuredBuffer(const std::string& name, StructuredBuffer* sb) override;
 		virtual std::string GetExtension() const override { return "glsl"; }
 
 		inline uint32 GetProgram() const { return mProgram; }
@@ -56,6 +58,12 @@ namespace SE3D2
 		void Save(const std::string& name);
 
 	};
+
+	template<typename T>
+	bool OGShader<T>::SetStructuredBuffer(const std::string& name, StructuredBuffer* sb)
+	{
+		return false;
+	}
 
 	template<typename T>
 	bool OGShader<T>::Compile(const std::string& name)

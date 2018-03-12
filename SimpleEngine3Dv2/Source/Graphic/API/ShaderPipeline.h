@@ -15,7 +15,7 @@ namespace SE3D2
 				{
 					mStages[0] = shader;
 				}
-				else if (shader->GetType() == ShaderType::FRAGMET)
+				else if (shader->GetType() == ShaderType::PIXEL)
 				{
 					mStages[4] = shader;
 				}

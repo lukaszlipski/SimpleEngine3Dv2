@@ -21,7 +21,7 @@ namespace SE3D2
 			{
 				static_cast<Dx11VertexShader*>(mStages[0])->Bind();
 			}
-			if (mStages[4] && mStages[4]->GetType() == ShaderType::FRAGMET)
+			if (mStages[4] && mStages[4]->GetType() == ShaderType::PIXEL)
 			{
 				static_cast<Dx11PixelShader*>(mStages[4])->Bind();
 			}

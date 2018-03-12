@@ -6,6 +6,7 @@
 #include <d3dcompiler.h>
 #include "..\System\Graphics.h"
 #include <assert.h>
+#include "..\Graphic\API\Buffer.h"
 
 namespace SE3D2
 {
@@ -15,8 +16,9 @@ namespace SE3D2
 		bool Compile(const std::string& name, std::string& source, bool shouldCompile);
 		void Bind();
 		void SetConstantBuffer(Dx11ParametersBuffer* pb);
+		void SetStructuredBuffer(Dx11StructuredBuffer* sb, uint32 slot);
 		ID3D11PixelShader* GetShader() const { return mShader; }
-		inline ShaderType GetType() { return ShaderType::FRAGMET; }
+		inline ShaderType GetType() { return ShaderType::PIXEL; }
 	private:
 		ID3D11PixelShader* mShader;
 	};
@@ -27,10 +29,24 @@ namespace SE3D2
 		bool Compile(const std::string& name, std::string& source, bool shouldCompile);
 		void Bind();
 		void SetConstantBuffer(Dx11ParametersBuffer* pb);
+		void SetStructuredBuffer(Dx11StructuredBuffer* sb, uint32 slot);
 		ID3D11VertexShader* GetShader() const { return mShader; }
 		inline ShaderType GetType() { return ShaderType::VERTEX; }
 	private:
 		ID3D11VertexShader* mShader;
+	};
+
+	class Dx11ComputeShaderPolicy
+	{
+	public:
+		bool Compile(const std::string& name, std::string& source, bool shouldCompile);
+		void Bind();
+		void SetConstantBuffer(Dx11ParametersBuffer* pb);
+		void SetStructuredBuffer(Dx11StructuredBuffer* sb, uint32 slot);
+		ID3D11ComputeShader* GetShader() const { return mShader; }
+		inline ShaderType GetType() { return ShaderType::COMPUTE; }
+	private:
+		ID3D11ComputeShader * mShader;
 	};
 
 
@@ -52,8 +68,9 @@ namespace SE3D2
 		virtual bool Compile(const std::string& name) override;
 		virtual std::string GetExtension() const override { return "hlsl"; }
 		virtual void SetParametersBuffer(ParametersBuffer* pb, uint32 globalSlot = 0) override;
+		virtual bool SetStructuredBuffer(const std::string& name, StructuredBuffer* sb = nullptr) override;
 
-		inline void Bind() { mShaderPolicy.Bind(); }
+		void Bind() { mShaderPolicy.Bind(); }
 
 	protected:
 		virtual bool CollectResources(const std::string& source) override;
@@ -61,10 +78,23 @@ namespace SE3D2
 	private:
 		T mShaderPolicy;
 
-		void ProcessCBuffer(ID3D11ShaderReflectionConstantBuffer* ConstBuffer, int32 index);
+		void ProcessCBuffer(ID3D11ShaderReflectionConstantBuffer* ConstBuffer, D3D11_SHADER_BUFFER_DESC Desc, int32 index);
 
 	};
 
+	template<typename T>
+	bool Dx11Shader<T>::SetStructuredBuffer(const std::string& name, StructuredBuffer* sb)
+	{
+		for (auto& Buff : mStructuredBuffers)
+		{
+			if (Buff.mName == name)
+			{
+				mShaderPolicy.SetStructuredBuffer(static_cast<Dx11StructuredBuffer*>(sb), Buff.mSlot);
+				return true;
+			}
+		}
+		return false;
+	}
 
 	template<typename T>
 	bool Dx11Shader<T>::Compile(const std::string& name)
@@ -123,35 +153,49 @@ namespace SE3D2
 		D3DReflect(&source[0], source.length(), IID_ID3D11ShaderReflection, reinterpret_cast<void**>(&pReflector));
 		D3D11_SHADER_DESC Desc;
 		pReflector->GetDesc(&Desc);
-
-		// Reserve memory for all buffers up front
-		mParametersBuffers.reserve(Desc.ConstantBuffers);
-
-		// Get constant buffers
-		for (uint32_t i = 0; i < Desc.ConstantBuffers; ++i)
+		
+		// Get constant buffers and structured buffers
+		for (uint32 i = 0; i < Desc.ConstantBuffers; ++i)
 		{
 			ID3D11ShaderReflectionConstantBuffer* ConstBuffer = pReflector->GetConstantBufferByIndex(i);
-			ProcessCBuffer(ConstBuffer, i);
+
+			D3D11_SHADER_BUFFER_DESC BufferDesc;
+			ConstBuffer->GetDesc(&BufferDesc);
+
+			if (BufferDesc.Type == D3D_CT_CBUFFER) //  constant buffer
+			{
+				int32 slot = static_cast<int32>(mParametersBuffers.size()); // #TODO : thread safe ?
+				ProcessCBuffer(ConstBuffer, BufferDesc, slot);
+			}
+			else if (BufferDesc.Type == D3D_CT_RESOURCE_BIND_INFO) // structured buffer
+			{
+				uint32 slot = static_cast<uint32>(mStructuredBuffers.size()); // #TODO : thread safe ?
+				mStructuredBuffers.push_back({ BufferDesc.Name, BufferDesc.Size, slot });
+				
+			}
+			else
+			{
+				// #TODO: unsupported constant buffer type
+			}
 		}
+		
 
 		pReflector->Release();
 		return true;
 	}
 
 	template<typename T>
-	void SE3D2::Dx11Shader<T>::ProcessCBuffer(ID3D11ShaderReflectionConstantBuffer* ConstBuffer, int32 index)
+	void SE3D2::Dx11Shader<T>::ProcessCBuffer(ID3D11ShaderReflectionConstantBuffer* ConstBuffer, D3D11_SHADER_BUFFER_DESC Desc, int32 index)
 	{
-		D3D11_SHADER_BUFFER_DESC ConstBufferDesc;
-		ConstBuffer->GetDesc(&ConstBufferDesc);
-
-		ParametersBuffer* TmpBuffer = Graphics::Get().GetContext()->CreateParametersBuffer(ConstBufferDesc.Name, ConstBufferDesc.Size, index);
+		
+		ParametersBuffer* TmpBuffer = Graphics::Get().GetContext()->CreateParametersBuffer(Desc.Name, Desc.Size, index);
 		if (!TmpBuffer)
 		{
 			return;
 		}
 		std::unique_ptr<ParametersBuffer> Buffer(TmpBuffer);
 
-		for (uint32 v = 0; v < ConstBufferDesc.Variables; ++v)
+		for (uint32 v = 0; v < Desc.Variables; ++v)
 		{
 			ID3D11ShaderReflectionVariable* Variable = {};
 			Variable = ConstBuffer->GetVariableByIndex(v);
@@ -208,6 +252,7 @@ namespace SE3D2
 
 	using Dx11VertexShader = Dx11Shader<Dx11VertexShaderPolicy>;
 	using Dx11PixelShader = Dx11Shader<Dx11PixelShaderPolicy>;
+	using Dx11ComputeShader = Dx11Shader<Dx11ComputeShaderPolicy>;
 
 }
 

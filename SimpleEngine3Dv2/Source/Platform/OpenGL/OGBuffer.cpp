@@ -7,7 +7,7 @@ namespace SE3D2
 	{
 		glGenBuffers(1, &mBuffer);
 		glBindBuffer(GetBufferType(), mBuffer);
-		glBufferData(GetBufferType(), size, data, GL_STATIC_DRAW);
+		glBufferData(GetBufferType(), size, data, GetAccessType());
 		glBindBuffer(GetBufferType(), 0);
 		return true;
 	}
@@ -35,8 +35,12 @@ namespace SE3D2
 	bool OGVertexBuffer::Create(int32 size, void* data /*= nullptr*/)
 	{
 		mSize = size;
-
-		return CreateBuffer(size, data);
+		if (!CreateBuffer(size, data))
+		{
+			return false;
+		}
+		SetValid();
+		return true;
 	}
 
 	bool OGVertexBuffer::Update(int32 size, int32 offset, void* data)
@@ -52,8 +56,12 @@ namespace SE3D2
 	bool OGIndexBuffer::Create(int32 size, void* data /*= nullptr*/)
 	{
 		mSize = size;
-
-		return CreateBuffer(size, data);
+		if (!CreateBuffer(size, data))
+		{
+			return false;
+		}
+		SetValid();
+		return true;
 	}
 
 	bool OGIndexBuffer::Update(int32 size, int32 offset, void* data)
@@ -69,11 +77,31 @@ namespace SE3D2
 	bool OGUniformBlockBuffer::Create(int32 size, void* data /*= nullptr*/)
 	{
 		mSize = size;
-
-		return CreateBuffer(size, data);
+		if (!CreateBuffer(size, data))
+		{
+			return false;
+		}
+		SetValid();
+		return true;
 	}
 
 	bool OGUniformBlockBuffer::Update(int32 size, int32 offset, void* data)
+	{
+		return UpdateBuffer(size, offset, data);
+	}
+
+	bool OGStructuredBuffer::Create(int32 size, void* data /*= nullptr*/)
+	{
+		mSize = size;
+		if (!CreateBuffer(size, data))
+		{
+			return false;
+		}
+		SetValid();
+		return true;
+	}
+
+	bool OGStructuredBuffer::Update(int32 size, int32 offset, void* data)
 	{
 		return UpdateBuffer(size, offset, data);
 	}

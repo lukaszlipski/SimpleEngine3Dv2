@@ -22,11 +22,11 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 {
 
 	File::Get().Startup();
-	Window::Get().Startup(800, 600, "SimpleEngine3Dv2");
-	Graphics::Get().Startup(GraphicsAPI::DIRECTX11, 800, 600);
+	Window::Get().Startup(1024, 720, "SimpleEngine3Dv2");
+	Graphics::Get().Startup(GraphicsAPI::DIRECTX11, 1024, 720);
 
 	Shader* vertex = ShaderManager::Get().GetShader<ShaderType::VERTEX>("VertexShaderTest");
-	Shader* fragment = ShaderManager::Get().GetShader<ShaderType::FRAGMET>("PixelShaderTest");
+	Shader* fragment = ShaderManager::Get().GetShader<ShaderType::PIXEL>("PixelShaderTest");
 
 	ShaderPipeline* shaderPip = Graphics::Get().GetContext()->CreateShaderPipeline({ vertex, fragment });
 	shaderPip->Bind();
@@ -61,12 +61,18 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	IndexBuffer* ibuffer = Graphics::Get().GetContext()->CreateIndexBuffer(sizeof(uint32_t) * 6, &indicesArray);
 	ibuffer->Bind();
+
+	Shader* compute = ShaderManager::Get().GetShader<ShaderType::COMPUTE>("ComputeShaderTest");
+	StructuredBuffer* sb = Graphics::Get().GetContext()->CreateStructuredBuffer(4, sizeof(uint32_t) * 6, &indicesArray);
+
 	///////////////////////////////// RAW OPENGL  /////////////////////////////////////////
 	
 	//////////////////////////////////////////////////////////////////////////
 
 	///////////////////////////////// RAW DIRECTX /////////////////////////////////////////
 	static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	((Dx11ComputeShader*)compute)->Bind();
 	//////////////////////////////////////////////////////////////////////////
 
 	while (Window::Get().ShouldWindowClose())
@@ -75,7 +81,14 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		Graphics::Get().Clear();
 		
 		///////////////////////////////// RAW DIRECTX /////////////////////////////////////////
+
+		compute->SetStructuredBuffer("test", sb);
+		static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->Dispatch(6, 1, 1);
+		compute->SetStructuredBuffer("test");
+
+		fragment->SetStructuredBuffer("test", sb);
 		static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->DrawIndexed(ibuffer->GetIndicesNum(), 0, 0);
+		fragment->SetStructuredBuffer("test");
 		//////////////////////////////////////////////////////////////////////////
 
 		///////////////////////////////// RAW OPENGL  /////////////////////////////////////////			
