@@ -192,6 +192,21 @@ namespace SE3D2
 		return new Dx11ShaderPipeline(stages);
 	}
 
+	bool Dx11Context::SetComputeShader(Shader* shader)
+	{
+		if (shader->GetType() == ShaderType::COMPUTE)
+		{
+			((Dx11ComputeShader*)shader)->Bind();
+			return true;
+		}
+		return false;
+	}
+
+	void Dx11Context::Dispatch(int32 x, int32 y, int32 z)
+	{
+		static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->Dispatch(x, y, z);
+	}
+
 	StructuredBuffer* Dx11Context::CreateStructuredBuffer(int32 stride, int32 size, void* data /*= nullptr*/)
 	{
 		StructuredBuffer* buffer = new Dx11StructuredBuffer(stride);

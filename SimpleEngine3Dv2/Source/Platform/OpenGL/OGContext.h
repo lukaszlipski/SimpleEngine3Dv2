@@ -19,6 +19,8 @@ namespace SE3D2
 		virtual IndexBuffer* CreateIndexBuffer(int32 size, void* data = nullptr) override;
 		virtual StructuredBuffer* CreateStructuredBuffer(int32 stride, int32 size, void* data = nullptr) override;
 		virtual ShaderPipeline* CreateShaderPipeline(std::initializer_list<Shader *> stages) override;
+		virtual bool SetComputeShader(Shader* shader) override;
+		virtual void Dispatch(int32 x, int32 y, int32 z) override;
 
 	private:
 		void* mOpenGLContext;

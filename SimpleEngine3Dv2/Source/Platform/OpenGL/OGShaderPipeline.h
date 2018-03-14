@@ -29,6 +29,7 @@ namespace SE3D2
 
 		virtual void Bind() override
 		{
+			glUseProgram(0); 
 			glBindProgramPipeline(mPipe);
 		}
 

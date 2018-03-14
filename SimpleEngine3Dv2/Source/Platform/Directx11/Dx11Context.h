@@ -19,6 +19,8 @@ namespace SE3D2
 		virtual IndexBuffer* CreateIndexBuffer(int32 size, void* data = nullptr) override;
 		virtual StructuredBuffer* CreateStructuredBuffer(int32 stride, int32 size, void* data = nullptr) override;
 		virtual ShaderPipeline* CreateShaderPipeline(std::initializer_list<Shader *> stages) override;
+		virtual bool SetComputeShader(Shader* shader) override;
+		virtual void Dispatch(int32 x, int32 y, int32 z) override;
 
 		inline struct ID3D11Device* GetDevice() const { return mD3D11Device; }
 		inline struct ID3D11DeviceContext* GetImmediateContext() const { return mD3D11DeviceCtx; }

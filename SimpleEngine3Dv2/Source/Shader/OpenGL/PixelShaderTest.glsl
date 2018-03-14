@@ -7,7 +7,12 @@ layout(std140) uniform PerObject2 {
 	float TestB3;
 };
 
+layout( std140 ) buffer test
+{
+  float Test[ ];
+};
+
 void main()
 {
-    FragColor = vec4(1.0f * Float, 0.0f, 0.0f, 1.0f);
+    FragColor = vec4(1.0f * Float, 1.0f * Test[1], 0.0f, 1.0f);
 }

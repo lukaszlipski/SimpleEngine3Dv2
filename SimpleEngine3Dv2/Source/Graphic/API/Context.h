@@ -37,6 +37,8 @@ namespace SE3D2
 		virtual IndexBuffer* CreateIndexBuffer(int32 size, void* data = nullptr) = 0;
 		virtual StructuredBuffer* CreateStructuredBuffer(int32 stride, int32 size, void* data = nullptr) = 0;
 		virtual ShaderPipeline* CreateShaderPipeline(std::initializer_list<Shader*> stages) = 0;
+		virtual bool SetComputeShader(Shader* shader) = 0;
+		virtual void Dispatch(int32 x, int32 y, int32 z) = 0;
 
 	protected:
 		inline Context* SetAPI(GraphicsAPI api) 

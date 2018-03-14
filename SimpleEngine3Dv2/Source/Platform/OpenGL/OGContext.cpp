@@ -80,6 +80,11 @@ namespace SE3D2
 			NewShader = new OGShader<OGFragmentShaderPolicy>(name);
 			break;
 		}
+		case ShaderType::COMPUTE:
+		{
+			NewShader = new OGShader<OGComputeShaderPolicy>(name);
+			break;
+		}
 		}
 
 		if (NewShader->Compile(name))
@@ -129,11 +134,26 @@ namespace SE3D2
 		return new OGShaderPipeline(stages);
 	}
 
+	bool OGContext::SetComputeShader(Shader* shader)
+	{
+		if (shader->GetType() == ShaderType::COMPUTE)
+		{
+			glUseProgram(((OGComputeShader*)shader)->GetProgram());
+			return true;
+		}
+		return false;
+	}
+
 	StructuredBuffer* OGContext::CreateStructuredBuffer(int32 stride, int32 size, void* data /*= nullptr*/)
 	{
-		OGStructuredBuffer* ib = new OGStructuredBuffer();
-		ib->Create(size, data);
-		return ib;
+		OGStructuredBuffer* sb = new OGStructuredBuffer();
+		sb->Create(size, data);
+		return sb;
+	}
+
+	void OGContext::Dispatch(int32 x, int32 y, int32 z)
+	{
+		glDispatchCompute(6, 1, 1);
 	}
 
 }

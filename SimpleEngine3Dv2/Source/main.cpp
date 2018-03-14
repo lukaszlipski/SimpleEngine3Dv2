@@ -23,7 +23,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	File::Get().Startup();
 	Window::Get().Startup(1024, 720, "SimpleEngine3Dv2");
-	Graphics::Get().Startup(GraphicsAPI::DIRECTX11, 1024, 720);
+	Graphics::Get().Startup(GraphicsAPI::OPENGL, 1024, 720);
 
 	Shader* vertex = ShaderManager::Get().GetShader<ShaderType::VERTEX>("VertexShaderTest");
 	Shader* fragment = ShaderManager::Get().GetShader<ShaderType::PIXEL>("PixelShaderTest");
@@ -64,15 +64,12 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	Shader* compute = ShaderManager::Get().GetShader<ShaderType::COMPUTE>("ComputeShaderTest");
 	StructuredBuffer* sb = Graphics::Get().GetContext()->CreateStructuredBuffer(4, sizeof(uint32_t) * 6, &indicesArray);
-
 	///////////////////////////////// RAW OPENGL  /////////////////////////////////////////
 	
 	//////////////////////////////////////////////////////////////////////////
 
 	///////////////////////////////// RAW DIRECTX /////////////////////////////////////////
-	static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	((Dx11ComputeShader*)compute)->Bind();
+	//static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//////////////////////////////////////////////////////////////////////////
 
 	while (Window::Get().ShouldWindowClose())
@@ -80,20 +77,22 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		Window::Get().Update();
 		Graphics::Get().Clear();
 		
-		///////////////////////////////// RAW DIRECTX /////////////////////////////////////////
-
+		Graphics::Get().GetContext()->SetComputeShader(compute);
 		compute->SetStructuredBuffer("test", sb);
-		static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->Dispatch(6, 1, 1);
+		Graphics::Get().GetContext()->Dispatch(6, 1, 1);
 		compute->SetStructuredBuffer("test");
-
+		shaderPip->Bind();
 		fragment->SetStructuredBuffer("test", sb);
-		static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->DrawIndexed(ibuffer->GetIndicesNum(), 0, 0);
-		fragment->SetStructuredBuffer("test");
+
+		///////////////////////////////// RAW DIRECTX /////////////////////////////////////////
+		//static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->DrawIndexed(ibuffer->GetIndicesNum(), 0, 0);
 		//////////////////////////////////////////////////////////////////////////
 
-		///////////////////////////////// RAW OPENGL  /////////////////////////////////////////			
-		//glDrawElements(GL_TRIANGLES, ibuffer->GetIndicesNum(), GL_UNSIGNED_INT, 0);
+		///////////////////////////////// RAW OPENGL  /////////////////////////////////////////	
+		glDrawElements(GL_TRIANGLES, ibuffer->GetIndicesNum(), GL_UNSIGNED_INT, 0);
 		//////////////////////////////////////////////////////////////////////////
+
+		fragment->SetStructuredBuffer("test");
 
 		Graphics::Get().Update();
 	}
