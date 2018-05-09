@@ -15,6 +15,7 @@
 #include "Graphic/API/ShaderPipeline.h"
 #include "Platform/OpenGL/OGShaderPipeline.h"
 #include "Platform/DirectX11/Dx11ShaderPipeline.h"
+#include "Utility/Image.h"
 
 using namespace SE3D2;
 
@@ -23,7 +24,10 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	File::Get().Startup();
 	Window::Get().Startup(1024, 720, "SimpleEngine3Dv2");
-	Graphics::Get().Startup(GraphicsAPI::OPENGL, 1024, 720);
+	Graphics::Get().Startup(GraphicsAPI::DIRECTX11, 1024, 720);
+
+	//Image Img("Image/test.tga");
+	//Img.TryLoad();
 
 	Shader* vertex = ShaderManager::Get().GetShader<ShaderType::VERTEX>("VertexShaderTest");
 	Shader* fragment = ShaderManager::Get().GetShader<ShaderType::PIXEL>("PixelShaderTest");
@@ -69,7 +73,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	//////////////////////////////////////////////////////////////////////////
 
 	///////////////////////////////// RAW DIRECTX /////////////////////////////////////////
-	//static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//////////////////////////////////////////////////////////////////////////
 
 	while (Window::Get().ShouldWindowClose())
@@ -85,11 +89,11 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		fragment->SetStructuredBuffer("test", sb);
 
 		///////////////////////////////// RAW DIRECTX /////////////////////////////////////////
-		//static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->DrawIndexed(ibuffer->GetIndicesNum(), 0, 0);
+		static_cast<Dx11Context*>(Graphics::Get().GetContext())->GetImmediateContext()->DrawIndexed(ibuffer->GetIndicesNum(), 0, 0);
 		//////////////////////////////////////////////////////////////////////////
 
 		///////////////////////////////// RAW OPENGL  /////////////////////////////////////////	
-		glDrawElements(GL_TRIANGLES, ibuffer->GetIndicesNum(), GL_UNSIGNED_INT, 0);
+		//glDrawElements(GL_TRIANGLES, ibuffer->GetIndicesNum(), GL_UNSIGNED_INT, 0);
 		//////////////////////////////////////////////////////////////////////////
 
 		fragment->SetStructuredBuffer("test");
