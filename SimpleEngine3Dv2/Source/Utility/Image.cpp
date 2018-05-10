@@ -57,6 +57,7 @@ namespace SE3D2
 		if (HeaderBuffer.ImageTypeCode == 2)
 		{
 			Handle->Read(mPixels, mWidth * mHeight * mBytesPerPixel);
+			Postprocess(2);
 		}
 		else
 		{
@@ -67,6 +68,68 @@ namespace SE3D2
 
 		File::Get().CloseFile(Handle);
 		return true;
+	}
+
+	bool TgaLoader::Postprocess(int type)
+	{
+		struct Pixel
+		{
+			int8 R;
+			int8 G;
+			int8 B;
+			int8 A;
+		};
+
+		if (type == 2)
+		{
+			uint8* LineCpy = new uint8[mBytesPerPixel * mWidth];
+
+			for (int32 h = 0; h < mHeight/2; ++h)
+			{
+				uint8* CurrentLine = mPixels + (h * mWidth * mBytesPerPixel);
+				uint8* OppositeLine = mPixels + ((mHeight - h - 1) * mWidth * mBytesPerPixel);
+				int32 LineSize = mWidth * mBytesPerPixel;
+
+				// swap B and R
+				for (int32 w = 0; w < mWidth; ++w)
+				{
+					int32 B = w * mBytesPerPixel;
+					int32 R = (w * mBytesPerPixel) + 2;
+
+					uint8 Tmp = CurrentLine[B];
+					CurrentLine[B] = CurrentLine[R];
+					CurrentLine[R] = Tmp;
+
+					Tmp = OppositeLine[B];
+					OppositeLine[B] = OppositeLine[R];
+					OppositeLine[R] = Tmp;
+				}
+
+				// Swap lines
+				memcpy(LineCpy, CurrentLine, LineSize);
+				memcpy(CurrentLine, OppositeLine, LineSize);
+				memcpy(OppositeLine, LineCpy, LineSize);
+			}
+
+			// Odd case
+			if (mHeight % 2 != 0)
+			{
+				uint8* OddLine = mPixels + ((mHeight / 2 + 1) * mWidth * mBytesPerPixel);
+
+				for (int32 w = 0; w < mWidth; ++w)
+				{
+					int32 B = w * mBytesPerPixel;
+					int32 R = (w * mBytesPerPixel) + 2;
+
+					uint8 Tmp = OddLine[B];
+					OddLine[B] = OddLine[R];
+					OddLine[R] = Tmp;
+				}
+			}
+
+			return true;
+		}
+		return false;
 	}
 
 	Image::Image(const char* path)

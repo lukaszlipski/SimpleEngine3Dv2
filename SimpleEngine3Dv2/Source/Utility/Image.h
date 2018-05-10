@@ -41,6 +41,10 @@ namespace SE3D2
 		{ }
 
 		virtual bool TryLoad() override;
+
+	private:
+		bool Postprocess(int type);
+
 	};
 
 
@@ -56,6 +60,11 @@ namespace SE3D2
 		{
 			delete mLoader;
 		}
+
+		inline int32 GetWidth() const { return mLoader->GetWidth(); }
+		inline int32 GetHeight() const { return mLoader->GetHeight(); }
+		inline int8 GetBytesPerPixel() const { return mLoader->GetBytesPerPixel(); }
+		inline uint8* GetPixels() const { return mLoader->GetPixels(); }
 
 	private:
 		ImageLoader* mLoader = nullptr;
