@@ -22,11 +22,11 @@ namespace SE3D2
 				
 				if (va.Type == "Vector3")
 				{
-					glVertexAttribFormat(i, va.Size, GL_FLOAT_VEC3, GL_FALSE, va.Offset);
+					glVertexAttribFormat(i, 3, GL_FLOAT, GL_FALSE, va.Offset);
 				}
 				else if (va.Type == "Vector2")
 				{
-					glVertexAttribFormat(i, va.Size, GL_FLOAT_VEC2, GL_FALSE, va.Offset);
+					glVertexAttribFormat(i, 2, GL_FLOAT, GL_FALSE, va.Offset);
 				}
 				else if (va.Type == "float")
 				{
